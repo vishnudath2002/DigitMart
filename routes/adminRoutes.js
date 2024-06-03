@@ -5,7 +5,7 @@ const authorize = require('../middlewares/authorizationMiddleware');
 const router = express.Router();
 
 
-router.get('/signin', (req, res) => {
+router.get('/signin', (req, res) => {    
     if(!req.session.adminId){
         res.render('admin/signin');
       } 
