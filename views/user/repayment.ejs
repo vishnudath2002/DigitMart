@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Razorpay Checkout Repayment</title>
+    
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
+    <style>
+        .product-card {
+            width: 300px;
+            height: 500px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-card img {
+            max-width: 100%;
+            height: auto;
+            width: 100%;
+            max-height: 50%;
+        }
+
+        .pagination {
+            margin-top: 20px;
+        }
+
+        .navbar {
+            background-color: #343a40 !important;
+        }
+
+        .sidebar {
+            padding: 20px;
+            background-color: #f8f9fa;
+            top: 56px;
+            bottom: 0;
+            left: 0;
+            width: 250px;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .sidebar a {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .dropdown-menu {
+            width: 100%;
+        }
+
+        .input-group .btn {
+            height: 100%;
+        } 
+         
+        
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/user/homepage">Digit Mart</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/homepage">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/product">Products</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/profile">Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/cart">Cart</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/wishlist">wishlist</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/logout">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var options = {
+                "key": "<%= razorpay.key_id %>",
+                "amount": "<%= totalAmount  %>  " * 100,
+                "currency": "INR",
+                "name": "Digit Mart",
+                "description": "Test Transaction",
+                "image": "https://your-company-logo-url.com/logo.png",
+                "order_id": "", 
+                "handler": function (response){
+                    verify('<%= orderId %>');
+                },
+                "prefill": {
+                    "name": "John Doe",
+                    "email": "john.doe@example.com",
+                    "contact": "9999999999"
+                },
+                "notes": {
+                    "address": "Razorpay Corporate Office"
+                },
+                "theme": {
+                    "color": "#F37254"
+                }
+            };
+            var rzp1 = new Razorpay(options);
+            rzp1.open();
+        });
+
+        async function verify(id){
+            try {  
+                const response = await axios.post('/user/order/verify', {id});
+                if(response.data.success){
+                    Swal.fire({
+                        icon:"success",
+                        title:"Success",
+                        text:response.data.message
+                    })
+                    .then(() => {
+                        window.location.href = '/user/orders';
+                    });
+                    
+                } else {
+                    Swal.fire({
+                        icon:"error",
+                        title:"Error",
+                        text:response.data.message
+                    })
+                    .then(() => {
+                        window.location.href = '/user/orders';
+                    });
+                }
+            } catch (error) {
+               
+                Swal.fire({
+                    icon:"error",
+                    title:"Error",
+                    text:"An error occurred while verifying the payment"
+                })
+                .then(() => {
+                        window.location.href = '/user/orders';
+                    });
+            }
+        }
+    </script>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

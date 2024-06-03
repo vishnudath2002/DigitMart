@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick-theme.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        .slick-slide img {
+            width: 100%;
+            height: auto;
+        }
+        .zoom {
+            transition: transform .2s;
+        }
+        .zoom:hover {
+            transform: scale(2);
+            z-index: 9999;
+        }
+        .navbar {
+            background-color: rgb(47, 46, 46) !important;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="ui container mt-4">
+        <nav class="ui inverted teal menu navbar">
+            <div class="ui container">
+                <a class="item" href="/user/homepage">Digit Mart</a>
+                <div class="right menu">
+                    <a class="item" href="/user/homepage">Home</a>
+                    <a class="item" href="/user/product">Products</a>
+                    <a class="item" href="/user/profile">Profile</a>
+                    <a class="item" href="/user/cart">Cart</a>
+                    <a class="item" href="/user/wishlist">Wishlist</a>
+                    <a class="item" href="/user/logout">Logout</a>
+                </div>
+            </div>
+        </nav>
+        <div class="slick-slider">
+            <% product.Image.forEach(image => { %>
+                <div>
+                    <img src="/img/<%= image %>" alt="<%= product.Product_name %>" class="ui fluid image zoom" style="height: 400px; width: 400px;">
+                </div>
+            <% }); %>
+        </div>
+        <h2><%= product.Product_name %></h2>
+        <p><%= product.Description %></p>
+        <h3>RS:<%= product.Price %></h3>
+        <% if (product.Quantity > 0) { %>
+            <p>Stocks: <%= product.Quantity %></p>
+        <% } else { %>
+            <p>Sold Out</p>
+        <% } %>
+        <% if (product.Price != product.Discount && product.Discount != 0) { %>
+            <p>Discount price: <%= product.Discount %></p>
+        <% } %>
+        <p>
+            <% for (let i = 0; i < 5; i++) { %>
+                <% if (i < product.Rating) { %>
+                    <i class="fas fa-star"></i>
+                <% } else { %>
+                    <i class="far fa-star"></i>
+                <% } %>
+            <% } %>
+        </p>
+        <% if (product.Feature && product.Feature.length > 0) { %>
+            <h3>Highlight:</h3>
+            <ul>
+                <% product.Feature.forEach(highlight => { %>
+                    <li><%= highlight %></li>
+                <% }); %>
+            </ul>
+        <% } %>
+        <% if (product.Quantity > 0) { %>
+            <div class="ui form">
+                <div class="field">
+                    <label for="quantity">Quantity:</label>
+                    <input type="number" id="quantity" name="quantity" min="1" max="<%= Math.min(product.Quantity, 10) %>" value="1" required>
+                </div>
+                <button class="ui button" id="add-to-cart-button">Add to Cart</button>
+            </div>
+        <% } else { %>
+            <p>This product is currently out of stock.</p>
+        <% } %>
+        <br>
+        <button class="ui button" id="add-to-wishlist-button">Add to Wishlist</button>
+        <br>
+        <h2>Related Products</h2>
+        <div class="ui stackable four column grid">
+            <% relatedProducts.forEach(relatedProduct => { %>
+                <div class="column">
+                    <div class="ui card">
+                        <div class="content">
+                            <div class="header"><%= relatedProduct.Product_name %></div>
+                        </div>
+                        <div class="extra content">
+                            <a href="/user/product/<%= relatedProduct._id %>" class="ui teal button">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+        <br>
+        <div>
+            <h1>Reviews</h1>
+            <div>
+                <% if (product.Review.length > 0) { %>
+                    <ul>
+                        <% product.Review.forEach(review => { %>
+                            <li><%= review %></li>
+                        <% }); %>
+                    </ul>
+                <% } else { %>
+                    <p>No reviews available.</p>
+                <% } %>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        $(document).ready(function () {
+            $('.slick-slider').slick({
+                infinite: true,
+                slidesToShow: 1,
+                slidesToScroll: 1,
+                dots: true,
+                arrows: true,
+                autoplay: true,
+                autoplaySpeed: 2000
+            });
+
+            $('#add-to-cart-button').click(function (e) {
+                e.preventDefault();
+                const productId = '<%= product._id %>';
+                const quantity = $('#quantity').val();
+
+                axios.post(`/user/add-to-cart/${productId}`, { quantity })
+                    .then(response => {
+                        if (response.data.message === 'Product already in cart') {
+                            Swal.fire({
+                                icon: 'info',
+                                title: '',
+                                text: 'Product already in cart.',
+                                confirmButtonText: 'OK'
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success',
+                                text: 'Product added to cart successfully!',
+                                confirmButtonText: 'OK'
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: error.response.data.error || 'There was an error adding the product to the cart.',
+                            confirmButtonText: 'OK'
+                        });
+                    });
+            });
+
+            $('#add-to-wishlist-button').click(function (e) {
+                e.preventDefault();
+                const productId = '<%= product._id %>';
+
+                axios.post(`/user/add-to-wishlist/${productId}`)
+                    .then(response => {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success',
+                            text: 'Product added to wishlist successfully!',
+                            confirmButtonText: 'OK'
+                        });
+                    })
+                    .catch(error => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: error.response.data.message || 'There was an error adding the product to the wishlist.',
+                            confirmButtonText: 'OK'
+                        });
+                    });
+            });
+        });
+    </script>
+</body>
+</html>

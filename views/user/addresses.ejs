@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Addresses</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .ui.button {
+            margin-bottom: 10px;
+        }
+        li {
+            margin-bottom: 20px;
+        }
+        .navbar {
+            background-color: #343a40 !important;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/user/homepage">Digit Mart</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/homepage">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/product">Products</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/profile">Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/cart">Cart</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/wishlist">Wishlist</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/logout">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container">
+        <h1>User Addresses</h1>
+        <% if ( typeof address[0].Home_address === 'undefined' || typeof address[0].Office_address === 'undefined'  || !address[0].Home_address.Street
+         ||  !address[0].Home_address || !address[0].Office_address || !address[0].Office_address.Street ) { %>
+            <a href="/user/addresses/new" class="ui primary button">Add Address</a>
+            <% } %>
+        
+            <% if (typeof address[0].New_address === 'undefined' || !address[0].New_address || !address[0].New_address.Street) { %>
+                <a href="/user/addresses/add" class="ui primary button">Add Additional Address</a>
+          
+        <% } %>
+
+        <% address.forEach(address => { %>
+            <div class="ui raised segment">
+                <div class="content">
+                    
+                    <% if (address.Home_address && address.Home_address.Street) { %>
+                    <h3>Home Address</h3>
+                    <div class="ui list">
+                        <div class="item">
+                            <div class="header">Street:</div>
+                            <div class="description"><%= address.Home_address.Street %></div>
+                        </div>
+                        <div class="item">
+                            <div class="header">City:</div>
+                            <div class="description"><%= address.Home_address.City %></div>
+                        </div>
+                        <div class="item">
+                            <div class="header">Pincode:</div>
+                            <div class="description"><%= address.Home_address.Pincode %></div>
+                        </div>
+                        <div class="item">
+                            <div class="header">State:</div>
+                            <div class="description"><%= address.Home_address.State %></div>
+                        </div>
+                    </div>
+                    <div class="ui buttons">
+                        <a href="/user/addresses/edit/home" class="ui basic blue button">Edit</a>
+                        <a href="/user/addresses/delete/home" onclick="return confirm('Are you sure you want to delete this address?')" class="ui basic red button">Delete</a>
+                    </div>
+                    <% } %>
+                    <br><br>
+                    
+                    <% if (address.Office_address && address.Office_address.Street) { %>
+                    <h3>Office Address</h3>
+                    <div class="ui list">
+                        <div class="item">
+                            <div class="header">Street:</div>
+                            <div class="description"><%= address.Office_address.Street %></div>
+                        </div>
+                        <div class="item">
+                            <div class="header">City:</div>
+                            <div class="description"><%= address.Office_address.City %></div>
+                        </div>
+                        <div class="item">
+                            <div class="header">Pincode:</div>
+                            <div class="description"><%= address.Office_address.Pincode %></div>
+                        </div>
+                        <div class="item">
+                            <div class="header">State:</div>
+                            <div class="description"><%= address.Office_address.State %></div>
+                        </div>
+                    </div>
+                    <div class="ui buttons">
+                        <a href="/user/addresses/edit/office" class="ui basic blue button">Edit</a>
+                        <a href="/user/addresses/delete/office" onclick="return confirm('Are you sure you want to delete this address?')" class="ui basic red button">Delete</a>
+                    </div>
+                    <% } %>
+                    <br><br>
+
+                    <% if (address.New_address && address.New_address.Street) { %>
+                    <h3>Additional Address</h3>
+                    <div class="ui list">
+                        <div class="item">
+                            <div class="header">Street:</div>
+                            <div class="description"><%= address.New_address.Street %></div>
+                        </div>
+                        <div class="item">
+                            <div class="header">City:</div>
+                            <div class="description"><%= address.New_address.City %></div>
+                        </div>
+                        <div class="item">
+                            <div class="header">Pincode:</div>
+                            <div class="description"><%= address.New_address.Pincode %></div>
+                        </div>
+                        <div class="item">
+                            <div class="header">State:</div>
+                            <div class="description"><%= address.New_address.State %></div>
+                        </div>
+                    </div>
+                    <div class="ui buttons">
+                        <a href="/user/addresses/edit/additional" class="ui basic blue button">Edit</a>
+                        <a href="/user/addresses/delete/additional" onclick="return confirm('Are you sure you want to delete this address?')" class="ui basic red button">Delete</a>
+                    </div>
+                    <% } %>
+                </div>
+            </div>
+        <% }); %>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

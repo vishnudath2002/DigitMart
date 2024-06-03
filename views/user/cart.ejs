@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/semantic-ui/dist/semantic.min.css" rel="stylesheet">
+    <style>
+        .navbar {
+            background-color: #343a40 !important;
+        }
+    </style>
+    <title>Cart</title>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/user/homepage">Digit Mart</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/homepage">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/product">Products</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/profile">Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/cart">Cart</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/wishlist">Wishlist</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/logout">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="ui container">
+        <h1 class="ui header">Cart</h1>
+        <% if (products.length === 0) { %>
+            <div class="ui fail message">
+                <p>Your cart is empty, please add some products to cart</p>
+            </div>
+        <% } else { %>
+            <table class="ui celled table">
+                <thead>
+                    <tr>
+                        <th>Photo</th>
+                        <th>Product Name</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% products.forEach(product => { %>
+                        <tr>
+                            <td><img src="/img/<%= product.product.Image[0] %>" alt="Product Image"
+                                    style="height: 70px;width: 70px;"></td>
+                            <td><%= product.product.Product_name %></td>
+                            <td>
+                                <% if (product.product.Price == product.product.Discount || product.product.Discount == 0) { %>
+                                    <%= product.product.Price %>
+                                <% } else { %>
+                                    <%= product.product.Discount %>
+                                <% } %>
+                            </td>
+                            <td>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <button onclick="updateQuantity('<%= product.product._id %>', 'decrement')">-</button>
+                                    <span id="quantity-<%= product.product._id %>"><%= product.quantity %></span>
+                                    <button onclick="updateQuantity('<%= product.product._id %>', 'increment')">+</button>
+                                </div>
+                            </td>
+                            <td>
+                                <button class="ui red button" type="button" onclick="removeFromCart('<%= product.product._id %>')">Remove</button>
+                            </td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        <% } %>
+        <div class="ui container" style="padding-left: 55%;">
+            <% if (typeof cart !== 'undefined' && cart.TotalAmount > 0) { %>
+                <h2>Total Amount: RS:<%= cart.TotalAmount %></h2>
+            <% } %>
+        </div>
+        <br>
+        <% if (products.length > 0) { %>
+            <a href="/user/order/create" class="ui green button">Checkout</a>
+        <% } %>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        function updateQuantity(productId, action) {
+            axios.post(`/user/${action}/${productId}`)
+                .then(response => {
+                    if (response.data.message === 'Quantity incremented' || response.data.message === 'Quantity decremented') {
+                        const quantityElement = document.getElementById(`quantity-${productId}`);
+                        const newQuantity = response.data.cart.Items.find(item => item.Product.toString() === productId).Quantity;
+                        quantityElement.innerText = newQuantity;
+                        updateTotalAmount(response.data.cart.TotalAmount);
+                    }
+                })
+                .catch(error => {
+                    console.error(error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: error.response.data.message || 'There was an error updating the quantity.',
+                        confirmButtonText: 'OK'
+                    });
+                });
+        }
+    
+        function removeFromCart(productId) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, remove it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    axios.post(`/user/cart/${productId}`)
+                        .then(response => {
+                            Swal.fire(
+                                'Removed!',
+                                'The product has been removed from your cart.',
+                                'success'
+                            ).then(() => {
+                                location.reload();
+                            });
+                        })
+                        .catch(error => {
+                            console.error(error);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'There was an error removing the product from the cart.',
+                                confirmButtonText: 'OK'
+                            });
+                        });
+                }
+            });
+        }
+    
+        function updateTotalAmount(totalAmount) {
+            const totalAmountElement = document.querySelector('.ui.container h2');
+            totalAmountElement.innerText = `Total Amount: RS ${totalAmount}`;
+        }
+    </script>
+    
+    
+</body>
+
+</html>

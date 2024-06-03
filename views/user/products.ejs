@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products</title>
+
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
+    <style>
+        .product-card {
+            width: 300px;
+            height: 500px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-card img {
+            max-width: 100%;
+            height: auto;
+            width: 100%;
+            max-height: 50%;
+        }
+
+        .pagination {
+            margin-top: 20px;
+        }
+
+        .navbar {
+            background-color: #343a40 !important;
+        }
+
+        .sidebar {
+            padding: 20px;
+            background-color: #f8f9fa;
+            top: 56px;
+            bottom: 0;
+            left: 0;
+            width: 250px;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .sidebar a {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .dropdown-menu {
+            width: 100%;
+        }
+
+        .input-group .btn {
+            height: 100%;
+        } 
+         
+         .selected {
+            font-weight: bold;
+            color: blue;
+        }
+        
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/user/homepage">Digit Mart</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/homepage">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/product">Products</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/profile">Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/cart">Cart</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/wishlist">wishlist</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/logout">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container-fluid main-content" style="margin-left: 10px;">
+        <div class="row">
+            <div class="col-md-3 ">
+                <div class="sidebar">
+                    <div class="input-group" style="height: 40px;">
+
+                        <input type="search" class="form-control rounded" id="searchInput"
+                            placeholder="Search Name" aria-label="Search" aria-describedby="search-addon" />
+                        <button type="button" class="btn btn-outline-primary" id="searchButton">🔍</button>
+                        <a href="/user/product"><button type="button" class="btn btn-outline-secondary"
+                                id="clearButton">X</button></a>
+                    </div>
+                    <hr>
+                   
+                    <div>
+                        <p>Filter by Category:</p>
+                        <% categories.forEach(category=> { %>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="categoryFilter"
+                                    id="<%= category.name %>" value="/user/products/category/<%= category._id %>">
+                                <label class="form-check-label" for="<%= category.name %>">
+                                    <%= category.name %>
+                                </label>
+                            </div>
+                            <% }); %>
+                    </div>
+                    <hr>
+                    
+                    <div>
+                        <p>Sort by Price:</p>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="priceSort" id="priceLowToHigh"
+                                value="/user/products/price-low-to-high">
+                            <label class="form-check-label" for="priceLowToHigh">
+                                Low to High
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="priceSort" id="priceHighToLow"
+                                value="/user/products/price-high-to-low">
+                            <label class="form-check-label" for="priceHighToLow">
+                                High to Low
+                            </label>
+                        </div>
+                    </div>
+                    <hr>
+                    <div>
+                        <p>Sort Alphabetically:</p>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="alphabeticalSort" id="aToZ"
+                                value="/user/products/alphabetical">
+                            <label class="form-check-label" for="aToZ">
+                                A - Z
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="alphabeticalSort" id="zToA"
+                                value="/user/products/de-alphabetical">
+                            <label class="form-check-label" for="zToA">
+                                Z - A
+                            </label>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+            <div class="col-md-9">
+                <div class="row">
+                    <% products.forEach(product=> { %>
+                        <div class="col-md-4">
+                            <a href="/user/product/<%= product._id %>" class="btn">
+                                <div class="product-card">
+                                    <img src="/img/<%= product.Image[0] %>" class="img-fluid"
+                                        alt="<%= product.Product_name %>"><br>
+                                    <h2>
+                                        <%= product.Product_name %>
+                                    </h2>
+                                    <p>
+                                        <%= product.Description %>
+                                    </p>
+                                    <h4>RS:<%= product.Price %>
+                                    </h4>
+                                          <% if(product.Price == product.Discount || product.Discount == 0 ) { %>
+                                            <p></p>
+                                             <% } else { %>                                             
+                                               <p>Discount price:<%= product.Discount %></p>
+                                                <% } %>
+
+                                                
+                                            <p>
+                                               <% for (let i=0; i < 5; i++) { %>
+                                                <% if (i < product.Rating) { %>
+                                                     <i class="fas fa-star "></i>
+                                                        <% } else { %>
+                                                <i class="far fa-star "></i>
+                                                                 <% } %>
+                                                                    <% } %>
+                                           </p>
+
+
+                                </div>
+                            </a>
+                        </div>
+                        <% }); %>
+                </div>
+
+                <% if (typeof totalPages !=='undefined' && totalPages> 1) { %>
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center">
+                            <% if (currentPage> 1) { %>
+                                <li class="page-item">
+                                    <a class="page-link" href="/user/product/?page=<%= currentPage - 1 %>"
+                                        aria-label="Previous">
+                                        <span aria-hidden="true">&laquo;</span>
+                                    </a>
+                                </li>
+                                <% } %>
+                                    <li class="page-item active"><a class="page-link" href="#">Page <%= currentPage %>
+                                                of <%= totalPages %></a></li>
+                                    <% if (currentPage < totalPages) { %>
+                                        <li class="page-item">
+                                            <a class="page-link" href="/user/product/?page=<%= currentPage + 1 %>"
+                                                aria-label="Next">
+                                                <span aria-hidden="true">&raquo;</span>
+                                            </a>
+                                        </li>
+                                        <% } %>
+                        </ul>
+                    </nav>
+                    <% } %>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('input[type="radio"]').change(function () {
+                var sortingUrl = $(this).val();
+                window.location.href = sortingUrl;
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('#searchButton').click(function () {
+                var searchValue = $('#searchInput').val().trim();
+                if (searchValue !== '') {
+
+                    window.location.href = '/user/products/search?name=' + encodeURIComponent(searchValue);
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
+    <title>Add Address</title>
+    <style>
+        .navbar {
+            background-color: rgb(47, 46, 46);
+            width: 100%;
+        }
+    </style>
+</head> 
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand" href="/user/homepage">Digit Mart</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/homepage">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/product">Products</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/profile">Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/cart">Cart</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/wishlist">wishlist</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                       <button><a class="nav-link" href="/user/logout">Logout</a></button> 
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+   
+    <div class="ui container">
+        <h1 class="ui header"></h1>
+        <form class="ui form" action="/user/add-address" method="POST" onsubmit="return validateForm()">
+            <div class="two fields">
+                <div class="field">
+                    <label>New Address:</label>
+                    <input type="text" name="billingAddressLine1" required pattern="[A-Za-z\s]+" title="Only letters and spaces are allowed">
+                </div>
+                <div class="field">
+                    <label>City:</label>
+                    <input type="text" name="billingCity" required pattern="[A-Za-z\s]+" title="Only letters and spaces are allowed">
+                </div>
+            </div>
+            <div class="two fields">
+                <div class="field">
+                    <label>Pincode:</label>
+                    <input type="text" name="billingPincode" required pattern="[0-9]{6}" title="Pincode must be 6 digits">
+                </div>
+                <div class="field">
+                    <label>State:</label>
+                    <input type="text" name="billingState" required pattern="[A-Za-z\s]+" title="Only letters and spaces are allowed">
+                </div>
+            </div>
+            
+            <button class="ui primary button" type="submit">Add Address</button>
+        </form>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        function validateForm() {
+            var billingAddressLine1 = document.getElementsByName("billingAddressLine1")[0].value;
+            var billingCity = document.getElementsByName("billingCity")[0].value;
+            var billingPincode = document.getElementsByName("billingPincode")[0].value;
+            var billingState = document.getElementsByName("billingState")[0].value;
+
+            var regex = /^[A-Za-z\s]+$/; 
+            if (!regex.test(billingAddressLine1) || !regex.test(billingCity) || !regex.test(billingState)) {
+                alert("Only letters and spaces are allowed for address, city, and state fields.");
+                return false;
+            }
+
+            var pincodeRegex = /^[0-9]{6}$/;
+            if (!pincodeRegex.test(billingPincode)) {
+                alert("Pincode must be 6 digits.");
+                return false;
+            }
+
+            return true;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 Not Found</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f2f5;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .container {
+            text-align: center;
+            background: white;
+            padding: 40px 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .error-title {
+            font-size: 120px;
+            font-weight: bold;
+            color: #ff6f61;
+            margin-bottom: 20px;
+        }
+
+        .error-message {
+            font-size: 24px;
+            color: #343a40;
+            margin-bottom: 20px;
+        }
+
+        .description {
+            font-size: 18px;
+            color: #6c757d;
+            margin-bottom: 30px;
+        }
+
+        .go-back-button {
+            margin-top: 20px;
+        }
+
+        .go-back-button a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .error-illustration {
+            width: 100%;
+            max-width: 300px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .error-title {
+                font-size: 80px;
+            }
+
+            .error-message {
+                font-size: 20px;
+            }
+
+            .description {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRpmAP8fFjNdhQuB9t_glck_M2HuKZiB4mO_Q&s" alt="404 Illustration" class="error-illustration" >
+        <div class="error-title">404</div>
+        <div class="error-message">Page Not Found</div>
+        <div class="description">Sorry, the page you're looking for doesn't exist. Please check the URL or go back to the previous page.</div>
+        <button class="ui button primary go-back-button" onclick="goBack()">Go Back</button>
+    </div>
+
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+</body>
+</html>

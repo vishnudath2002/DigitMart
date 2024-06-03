@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css" rel="stylesheet">
+   
+    <title>Create Order</title>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/user/homepage">Digit Mart</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/homepage">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/product">Products</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/profile">Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/cart">Cart</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/wishlist">wishlist</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/logout">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <section class="h-100 h-custom" style="background-color: #d2c9ff;">
+        <div class="container py-5 h-100">
+            <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col-12">
+                    <div class="card card-registration card-registration-2" style="border-radius: 15px;">
+                        <div class="card-body p-0">
+                            <div class="row g-0">
+                                <div class="col-lg-4 bg-grey">
+                                    <div class="p-5">
+                                        <h3 class="fw-bold mb-5 mt-2 pt-1">Create Order</h3>
+                                      
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Product Name</th>
+                                                    <th style="text-align: center;">Quantity</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <% products.forEach(product => { %>
+                                                    <tr>
+                                                        <td><%= product.product.Product_name %></td>
+                                                        <td style="text-align: center;"><%= product.quantity %></td>
+                                                    </tr>
+                                                <% }); %>
+                                            </tbody>
+                                        </table>
+                      
+                                        <div class="d-flex justify-content-between mb-4">
+                                            <h5 class="text-uppercase">
+                                                <%= cart.Items.length %> items
+                                            </h5>
+                                            <h5>Amount :<%= cart.TotalAmount %>
+                                            </h5>
+                                        </div>
+                                        <h5 class="text-uppercase mb-3">Select Address</h5>
+                                        <form action="/user/order/create" method="POST" onsubmit="return validateOrder()">
+                                            <div class="mb-4 pb-2">
+                                                <select id="addressType" name="addressType" class="form-control" required>
+                                                    <% if (address.Home_address?.Street) { %>
+                                                        <option value="home">Home Address</option>
+                                                    <% } %>
+                                                    <% if (address.Office_address?.Street) { %>
+                                                        <option value="office">Office Address</option>
+                                                    <% } %>
+                                                    <% if (address.New_address?.Street) { %>
+                                                        <option value="additional">Additional Address</option>
+                                                    <% } %>
+                                                    <option value="new">New Address</option>
+                                                </select>
+                                            </div>
+                                            <div id="newAddressFields" style="display: none;">
+                                                <div class="form-group">
+                                                    <label for="street">Street:</label>
+                                                    <input type="text" id="street" name="street" class="form-control">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="city">City:</label>
+                                                    <input type="text" id="city" name="city" class="form-control">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="pincode">Pincode:</label>
+                                                    <input type="text" id="pincode" name="pincode" class="form-control">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="state">State:</label>
+                                                    <input type="text" id="state" name="state" class="form-control">
+                                                </div>
+                                            </div>
+
+
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-8">
+                                    <br><br>
+                                    
+                                    <div class="p-5">
+                                        <h5 class="text-uppercase mb-3">Select payment method</h5>
+                                    <div class="mb-4 pb-2">
+                                        <select id="paymentType" name="paymentType" class="form-control" required>
+
+                                            <option value="cod">COD</option>
+
+                                            <option value="razo">Razopay</option> 
+                                            <% if (wallet && wallet.Balance > 0 ) { %>  
+                                            <option value="wallet">Wallet</option> 
+                                            <% } %>
+                                        </select>
+                                    </div>
+                                        <button type="submit" data-mdb-button-init data-mdb-ripple-init
+                                            class="btn btn-dark btn-block btn-lg"
+                                            data-mdb-ripple-color="dark">Place Order</button>
+                                        </form>
+                                         
+                                        
+
+                                        <h5 class="text-uppercase mb-3">Give code</h5>
+
+                                        <div class="mb-5">
+                                            <% if ( typeof discountedPrice=='undefined'  ) { %>
+                                                <form id="couponForm" action="/user/apply-coupon" method="post">
+                                                    <div data-mdb-input-init class="form-outline">
+                                                        <select name="couponCode" id="couponCode" class="form-control form-control-lg">
+                                                            <% coupons.forEach(coupon => { %>
+                                                                <% if (coupon.Minimum_amount < cart.TotalAmount) { %>
+                                                                    <option value="<%= coupon.Coupons %>">Coupon: <%= coupon.Coupons %> - Discount: <%= coupon.Discount_amount %>%</option>
+                                                                <% } %>
+                                                            <% }); %>
+                                                        </select><br>
+                                                        <button type="submit" id="applyCouponBtn" data-mdb-button-init data-mdb-ripple-init class="btn btn-dark btn-block btn-lg" data-mdb-ripple-color="dark">Apply Coupon</button>
+                                                    </div>
+                                                </form>
+                                                <% } else { %>
+                                                    <form action="/user/remove-coupon" method="post">
+                                                        <div data-mdb-input-init class="form-outline">
+                                                            <button type="submit" data-mdb-button-init
+                                                                data-mdb-ripple-init
+                                                                class="btn btn-dark btn-block btn-lg"
+                                                                data-mdb-ripple-color="dark">Remove coupon </button>
+                                                        </div>
+                                                    </form>
+                                                    <% } %>
+                                        </div>
+
+                                        <hr class="my-4">
+
+                                        <div class="d-flex justify-content-between mb-5">
+                                            <h5 class="text-uppercase">Total price</h5>
+                                            <% if (typeof discountedPrice !=='undefined' ) { %>
+                                                <h5>
+                                                    <%= discountedPrice %>
+                                                </h5>
+                                                <% } else { %>
+                                                    <h5>
+                                                        <%= cart.TotalAmount %>
+                                                    </h5>
+                                                    <% } %>
+
+                                        </div>
+
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <script>
+        $(document).ready(function () {
+            $('#addressType').on('change', function () {
+                if (this.value === 'new') {
+                    $('#newAddressFields').show();
+                } else {
+                    $('#newAddressFields').hide();
+                }
+            });
+            const couponSelect = document.getElementById('couponCode');
+            const applyCouponBtn = document.getElementById('applyCouponBtn');
+            if (couponSelect.options.length === 0) {
+                applyCouponBtn.disabled = true;
+            } else {
+                applyCouponBtn.disabled = false;
+            }
+        });
+        
+       
+    </script>
+    <script>
+         function validateOrder() {
+        var totalAmount =` <%= cart.TotalAmount %> ` ;
+        var walletAmount = ` <%= wallet?.Balance %> `;
+        var paymentType = document.getElementById('paymentType').value;
+        
+
+        if ((discountedPrice > 1000 || totalAmount > 1000) && paymentType === 'cod') {
+            alert('Cash on Delivery (COD) is not allowed for orders above Rs 1000');
+            return false; 
+        }
+
+        if ( ( walletAmount >= totalAmount || walletAmount >= discountedPrice ) && paymentType === 'wallet') {
+            alert('Insufitioent Amount in Wallet');
+            return false;  
+        }
+
+        if( totalAmount <= 5000  ){
+
+        }
+
+        return true; 
+    }
+   </script>
+    <script> 
+    document.getElementById('applyCouponBtn').addEventListener('click', function () {
+            const couponCode = document.getElementById('couponCode').value;
+
+            axios.post('/user/apply-coupon', { couponCode })
+                .then(response => {
+                    if (response.data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Coupon Applied!',
+                            text: `Discounted price: ${response.data.discountedPrice}`,
+                            showConfirmButton: false,
+                            timer: 1500
+                        }).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: response.data.message
+                        });
+                    }
+                })
+                .catch(error => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: error.response.data.message || 'Something went wrong!'
+                    });
+                });
+        });
+    </script>
+        <script>
+        document.getElementById('payButton').addEventListener('click', async function (event) {
+        event.preventDefault();
+        const response = await fetch('/order/create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+            ,
+            body: JSON.stringify({
+                amount: cart.TotalAmount, 
+                currency: 'INR', 
+                receipt: 'order_receipt_123'
+            })
+        });
+       
+    });
+    </script>
+</body>
+
+</html>

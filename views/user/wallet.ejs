@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wallet</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        .transaction-history {
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .error-message {
+            color: red;
+            font-size: 0.875em;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/user/homepage">Digit Mart</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/product">Products</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/profile">Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/cart">Cart</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/wishlist">Wishlist</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/wallet">Wallet</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                      <a class="nav-link" href="/user/logout">Logout</a> 
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section class="vh-100" style="background-color: #eee;">
+        <div class="container py-5 h-100">
+          <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col-md-6">
+              <div class="card" style="border-radius: 15px;">
+                <div class="card-body text-center">
+                  <div class="mt-3 mb-4">
+                    <h1 class="text-center">Wallet</h1>
+                  </div>
+                  <% if (wallet) { %>
+                    <h4 class="mb-2"><%= wallet.User_id.name %></h4>
+                    <br>
+                    <div class="px-3 text-center" >
+                        <p class="mb-2 h5">Balance: <%= wallet.Balance %></p>
+                    </div>
+                  <% } else { %>
+                    <p>No money in wallet.</p>
+                  <% } %>
+                  <form id="moneyForm">
+                    <div class="form-group">
+                      <label for="amount">Amount:</label>
+                      <input type="number" name="amount" id="amount" class="form-control" min="1" required>
+                      <div id="amountError" class="error-message"></div>
+                    </div>
+                    <button type="button" id="addMoneyButton" class="btn btn-primary mt-3">Add Money</button>
+                    <button type="button" id="withdrawMoneyButton" class="btn btn-danger mt-3">Withdraw Money</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="card transaction-history" style="border-radius: 15px;">
+                <div class="card-body">
+                  <h3>Transaction History</h3>
+                  <% if (wallet) { %>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Balance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% wallet.History.forEach(transaction => { %>
+                                <tr>
+                                    <td><%= new Date(transaction.createdAt).toLocaleString() %></td>
+                                    <td><%= transaction.amount %></td>
+                                    <td><%= transaction.status %></td>
+                                    <td><%= transaction.oldBalance %></td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                  <% } else { %>
+                    <p>No transactions to show.</p>
+                  <% } %>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    <script>
+      document.getElementById('addMoneyButton').addEventListener('click', async function(event) {
+        event.preventDefault();
+        const amount = document.getElementById('amount').value;
+        const amountError = document.getElementById('amountError');
+        amountError.textContent = '';
+
+        if (amount <= 0 || isNaN(amount) || /^0[0-9]+/.test(amount)) {
+          amountError.textContent = 'Please enter a valid positive number that does not start with zero.';
+          return;
+        }
+
+        try {
+          const response = await axios.post('/user/wallet/add', { amount });
+          Swal.fire('Success', response.data.message, 'success').then(() => {
+            location.reload();
+          });
+        } catch (error) {
+          console.error(error);
+          Swal.fire('Error', error.response.data.message, 'error');
+        }
+      });
+
+      document.getElementById('withdrawMoneyButton').addEventListener('click', async function(event) {
+        event.preventDefault();
+        const amount = document.getElementById('amount').value;
+        const amountError = document.getElementById('amountError');
+        amountError.textContent = '';
+
+        if (amount <= 0 || isNaN(amount) || /^0[0-9]+/.test(amount)) {
+          amountError.textContent = 'Please enter a valid positive number that does not start with zero.';
+          return;
+        }
+
+        try {
+          const response = await axios.post('/user/wallet/withdraw', { amount });
+          Swal.fire('Success', response.data.message, 'success').then(() => {
+            location.reload();
+          });
+        } catch (error) {
+          console.error(error);
+          Swal.fire('Error', error.response.data.message, 'error');
+        }
+      });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

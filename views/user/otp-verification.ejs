@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Verification</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .error-message {
+            color: red;
+        }
+        .otp-field {
+  flex-direction: row;
+  column-gap: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.otp-field input {
+  height: 45px;
+  width: 42px;
+  border-radius: 6px;
+  outline: none;
+  font-size: 1.125rem;
+  text-align: center;
+  border: 1px solid #ddd;
+}
+.otp-field input:focus {
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
+}
+.otp-field input::-webkit-inner-spin-button,
+.otp-field input::-webkit-outer-spin-button {
+  display: none;
+}
+
+.resend {
+  font-size: 12px;
+}
+
+.footer {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  color: black;
+  font-size: 12px;
+  text-align: right;
+  font-family: monospace;
+}
+
+.footer a {
+  color: black;
+  text-decoration: none;
+}
+    </style>
+</head>
+<body>
+    
+    <section class="container-fluid bg-body-tertiary d-block bg-white" >
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-6 col-lg-4" style="min-width: 500px;">
+              <div class="card bg-da mb-5 mt-5 border-0" style="box-shadow: 0 12px 15px rgba(0, 0, 0, 0.02);">
+                <div class="card-body p-5 text-center">
+                  <h4>Verify</h4>
+                  <% if (typeof error !== 'undefined') { %>
+                    <p class="error-message mt-3"><%= error %></p>
+                <% } %>
+                <% if (typeof successMessage !== 'undefined') { %>
+                    <p class="success-message mt-3"><%= successMessage %></p>
+                <% } %>
+               
+                <p class="timer">Time remaining: <span id="timer"></span></p>
+                  <form id="otp-form" action="/user/verify" method="post" onsubmit="return validateOTP()">
+                  
+                    <input type="text" id="otp" name="otp" class="form-control" required>
+                    
+                    <br>
+      
+                  <button class="btn btn-primary mb-3" type="submit">
+                    Verify
+                  </button>
+                </form>
+                  <p class="resend text-muted mb-0" style="display: none;" id="resend-btn">
+                    Didn't receive otp? <a href="/user/resend-otp">Resend</a>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+      </section>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        let timeLeft = sessionStorage.getItem('timeLeft');
+        let startTime = sessionStorage.getItem('startTime');
+        
+        if (!timeLeft || !startTime) {
+          
+            timeLeft = 60;
+            startTime = Date.now();
+            sessionStorage.setItem('timeLeft', timeLeft);
+            sessionStorage.setItem('startTime', startTime);
+        } else {
+            
+            timeLeft = parseInt(timeLeft) - Math.floor((Date.now() - parseInt(startTime)) / 1000);
+            if (timeLeft < 0) timeLeft = 0; 
+        }
+        
+      
+        
+        const countdownTimer = setInterval(() => {
+            document.getElementById('timer').textContent = timeLeft;
+            timeLeft -= 1;
+            
+            if (timeLeft < 0) {
+                document.getElementById('timer').textContent = "time out";
+                clearInterval(countdownTimer);
+                document.getElementById('resend-btn').style.display = "inline-block";
+            }
+        }, 1000); 
+
+        function validateOTP() {
+            const otpInput = document.getElementById('otp').value;
+            if (!/^\d{6}$/.test(otpInput)) {
+                alert('Please enter a valid 6-digit OTP.');
+                return false;
+            }
+            return true;
+        }
+       
+    </script>
+</body>
+</html>

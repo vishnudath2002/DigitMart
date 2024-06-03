@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding: 20px;
+        }
+        .content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .navbar {
+            background-color: #343a40 !important; 
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/user/homepage">Digit Mart</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/homepage">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/product">Products</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/profile">Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/cart">Cart</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/wishlist">wishlist</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/logout">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="ui container content">
+        <h1 class="ui header"></h1>
+        <div class="ui raised segment">
+            <div class="ui grid">
+                <div class="four wide column">
+                    <div class="ui items">
+                        <div class="item">
+                            <div class="content">
+                                <div class="header">Username</div>
+                                <div class="description"><%= user.name %></div>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <div class="content">
+                                <div class="header">Email</div>
+                                <div class="description"><%= user.email %></div>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <div class="content">
+                                <div class="header">Phone Number</div>
+                                <div class="description"><%= user.phoneNumber %></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="twelve wide column">
+                  
+                </div>
+            </div>
+        </div>
+        <div class="ui buttons">
+            <a href="/user/edit-profile" class="ui button">Edit</a>
+            <a href="/user/change-password" class="ui button">Edit Password</a>
+            <a href="/user/addresses" class="ui button">Addresses</a>
+            <a href="/user/orders" class="ui button">Orders</a>
+            <a href="/user/logout" class="ui button">Logout</a>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

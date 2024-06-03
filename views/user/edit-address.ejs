@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Address</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        body {
+            padding: 20px;
+        }
+
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .form-container form {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand" href="/user/homepage">Digit Mart</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/homepage">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/product">Products</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/profile">Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/cart">Cart</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/wishlist">wishlist</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <button><a class="nav-link" href="/user/logout">Logout</a></button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="ui container form-container">
+        <% address.forEach(address => { %>
+        <form class="ui form" action="/user/addresses/<%= address._id %>" method="POST" onsubmit="return validateForm()">
+            <input type="hidden" name="_method" value="PUT">
+            <% if ( type == 'home') { %>
+            <div class="ui segment">
+               
+                <h4 class="ui dividing header">Home Address</h4>
+                <div class="field">
+                    <label>Street</label>
+                    <input type="text" name="billingAddressLine1" value="<%= address.Home_address.Street %>" required pattern="[A-Za-z\s]+" title="Only letters and spaces are allowed">
+                </div>
+                <div class="fields">
+                    <div class="seven wide field">
+                        <label>City</label>
+                        <input type="text" name="billingCity" value="<%= address.Home_address.City %>" required pattern="[A-Za-z\s]+" title="Only letters and spaces are allowed">
+                    </div>
+                    <div class="five wide field">
+                        <label>Pincode</label>
+                        <input type="text" name="billingPincode" value="<%= address.Home_address.Pincode %>" required pattern="[0-9]{6}" title="Pincode must be 6 digits">
+                    </div>
+                    <div class="four wide field">
+                        <label>State</label>
+                        <input type="text" name="billingState" value="<%= address.Home_address.State %>" required pattern="[A-Za-z\s]+" title="Only letters and spaces are allowed">
+                    </div>
+                </div>
+               
+            </div>
+            <% } %>
+            <% if ( type == 'office') { %>
+            <div class="ui segment">
+              
+                <h4 class="ui dividing header">Office Address</h4>
+                <div class="field">
+                    <label>Street</label>
+                    <input type="text" name="shippingAddressLine1" value="<%= address.Office_address.Street %>" required pattern="[A-Za-z\s]+" title="Only letters and spaces are allowed">
+                </div>
+                <div class="fields">
+                    <div class="seven wide field">
+                        <label>City</label>
+                        <input type="text" name="shippingCity" value="<%= address.Office_address.City %>" required pattern="[A-Za-z\s]+" title="Only letters and spaces are allowed">
+                    </div>
+                    <div class="five wide field">
+                        <label>Pincode</label>
+                        <input type="number" name="shippingPincode" value="<%= address.Office_address.Pincode %>" required pattern="[0-9]{6}" title="Pincode must be 6 digits">
+                    </div>
+                    <div class="four wide field">
+                        <label>State</label>
+                        <input type="text" name="shippingState" value="<%= address.Office_address.State %>" required pattern="[A-Za-z\s]+" title="Only letters and spaces are allowed">
+                    </div>
+                </div>
+               
+            </div>
+            <% } %>
+            <% if ( type == 'additional') { %>
+            <div class="ui segment">
+                <h4 class="ui dividing header">Additional Address</h4>
+                <div class="field">
+                    <label>Street</label>
+                    <input type="text" name="newAddressLine1" value="<%= address.New_address.Street %>" required pattern="[A-Za-z\s]+" title="Only letters and spaces are allowed">
+                </div>
+                <div class="fields">
+                    <div class="seven wide field">
+                        <label>City</label>
+                        <input type="text" name="newCity" value="<%= address.New_address.City %>" required pattern="[A-Za-z\s]+" title="Only letters and spaces are allowed">
+                    </div>
+                    <div class="five wide field">
+                        <label>Pincode</label>
+                        <input type="number" name="newPincode" value="<%= address.New_address.Pincode %>" required pattern="[0-9]{6}" title="Pincode must be 6 digits">
+                    </div>
+                    <div class="four wide field">
+                        <label>State</label>
+                        <input type="text" name="newState" value="<%= address.New_address.State %>" required pattern="[A-Za-z\s]+" title="Only letters and spaces are allowed">
+                    </div>
+                </div>
+            </div>
+            <% } %>
+            <button class="ui primary button" type="submit">Update Address</button>
+        </form>
+        <% }); %>
+    </div>
+
+   
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        function validateForm() {
+            var addressFields = [
+                document.getElementsByName("billingAddressLine1")[0].value,
+                document.getElementsByName("billingCity")[0].value,
+                document.getElementsByName("billingPincode")[0].value,
+                document.getElementsByName("billingState")[0].value,
+                document.getElementsByName("shippingAddressLine1")[0].value,
+                document.getElementsByName("shippingCity")[0].value,
+                document.getElementsByName("shippingPincode")[0].value,
+                document.getElementsByName("shippingState")[0].value
+            ];
+
+            if (document.getElementsByName("newAddressLine1")[0]) {
+                addressFields.push(
+                    document.getElementsByName("newAddressLine1")[0].value,
+                    document.getElementsByName("newCity")[0].value,
+                    document.getElementsByName("newPincode")[0].value,
+                    document.getElementsByName("newState")[0].value
+                );
+            }
+
+            var regex = /^[A-Za-z\s]+$/;
+            var pincodeRegex = /^[0-9]{6}$/;
+            for (var i = 0; i < addressFields.length; i++) {
+                if (i % 4 === 2) {
+          
+                    if (!pincodeRegex.test(addressFields[i])) {
+                        alert("Pincode must be 6 digits.");
+                        return false;
+                    }
+                } else {
+                  
+                    if (!regex.test(addressFields[i])) {
+                        alert("Only letters and spaces are allowed for address, city, and state fields.");
+                        return false;
+                    }
+                }        
+            }
+
+            return true;
+        }
+
+       
+    </script>
+</body>
+
+</html>

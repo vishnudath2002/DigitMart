@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Orders</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .order-item {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .cancel-form, .return-form {
+            margin-top: 10px;
+        }
+
+        .navbar {
+            background-color: #343a40 !important;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/user/homepage">Digit Mart</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/homepage">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/product">Products</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/profile">Profile</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/cart">Cart</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/wishlist">Wishlist</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/user/logout">Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="ui container mt-4">
+        <h1 class="ui header">Orders</h1>
+        <div class="ui relaxed divided list">
+            <% if (typeof successMessage !== 'undefined') { %>
+                <div class="ui success message">
+                    <i class="close icon"></i>
+                    <div class="header">Success!</div>
+                    <p><%= successMessage %></p>
+                </div>
+            <% } %>
+            <% if (orders.length === 0) { %>
+                <div class="ui fail message">
+                    <p>Your order is empty, please order something</p>
+                </div>
+            <% } %>
+            <% orders.forEach((order, index) => { %>
+                <div class="item order-item">
+                    <div class="content">
+                        <table class="ui definition table">
+                            <tbody>
+                                <tr>
+                                    <td>Order ID</td>
+                                    <td>Order Date</td>
+                                    <td>Products</td>
+                                    <td>Status</td>
+                                    <td>Total Amount</td>
+                                    <td>Action</td>
+                                </tr>
+                                <tr>
+                                    <td><%= order._id %></td>
+                                    <td>
+                                        <% const deliveryDate = new Date(order.Delivery_date); %>
+                                        <%= deliveryDate.toLocaleDateString() %>
+                                    </td>
+                                    <td>
+                                        <% order.Products.forEach(product => { %>
+                                            <div>
+                                                <% if (product.Product.Image && product.Product.Image.length > 0) { %>
+                                                    <img src="/img/<%= product.Product.Image[0] %>" alt="<%= product.Product.Product_name %>" style="width: 40px; height: 40px;">
+                                                <% } %>
+                                                <%= product.Quantity %> x <%= product.Product.Product_name %> - RS:<%= product.Amount %>
+                                            </div>
+                                        <% }); %>
+                                    </td>
+                                    <td><%= order.Status %></td>
+                                    <td>RS:<%= order.Total_amount %></td>
+                                    <td>
+                                        <% if (order.Status !== 'Cancelled' && order.Status !== 'Returned' && order.Status !== 'Delivered' ) { %>
+                                            <form id="cancelForm_<%= order._id %>" action="/user/orders/<%= order._id %>/cancel" method="POST" class="ui form cancel-form">
+                                                <button type="submit" class="ui red button">Cancel</button>
+                                            </form>
+                                        <% } %>
+                                        <% if (order.Status !== 'Returned' && order.Status !== 'Cancelled' && order.Status === 'Delivered' ) { %>
+                                            <form id="returnForm_<%= order._id %>" action="/user/orders/<%= order._id %>/return" method="POST" class="ui form return-form">
+                                                <button type="submit" class="ui red button">Return</button>
+                                            </form>
+                                        <% } %>
+                                        <a href="/user/orders/<%= order._id %>" class="ui button">Details</a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        $('.cancel-form button[type="submit"]').on('click', function(e) {
+            e.preventDefault();
+            const form = $(this).closest('form');
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'You are about to cancel this order!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, cancel it!',
+                cancelButtonText: 'No, keep it'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.off('submit').submit();
+                }
+            });
+        });
+
+        $('.return-form button[type="submit"]').on('click', function(e) {
+            e.preventDefault();
+            const form = $(this).closest('form');
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'You are about to return this order!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, return it!',
+                cancelButtonText: 'No, keep it'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.off('submit').submit();
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

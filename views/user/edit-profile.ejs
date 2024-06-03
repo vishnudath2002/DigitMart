@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Profile</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css">
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    .navbar {
+      background-color: rgb(47, 46, 46) !important;
+      width: 100%;
+    }
+    .error-message {
+      color: red;
+      font-size: 0.9em;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+        <a class="navbar-brand" href="/user/homepage" style="color: antiquewhite;">Digit Mart</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+              <li class="nav-item">
+                <a class="nav-link" href="/user/homepage" style="color: antiquewhite;">Home</a>
+              </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/user/product" style="color: antiquewhite;">Products</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/user/profile" style="color: antiquewhite;">Profile</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/user/cart" style="color: antiquewhite;">Cart</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="/user/wishlist" style="color: antiquewhite;">Wishlist</a>
+              </li>
+            </ul>
+        </div>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                   <a class="nav-link" href="/user/logout" style="color: antiquewhite;">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="ui container">
+  <h1 class="ui header">Edit Profile</h1>
+  <form class="ui form" id="profileForm">
+    <div class="field">
+      <label for="username">Username</label>
+      <input type="text" id="username" name="name" value="<%= user.name %>" >
+      <div id="usernameError" class="error-message"></div>
+    </div>
+
+    <div class="field">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" value="<%= user.email %>" >
+      <div id="emailError" class="error-message"></div>
+    </div>
+
+    <div class="field">
+      <label for="phonenumber">Phone Number</label>
+      <input type="text" id="phonenumber" name="phoneNumber" value="<%= user.phoneNumber %>" >
+      <div id="phoneNumberError" class="error-message"></div>
+    </div>
+
+    <button class="ui button primary" type="submit">Update Profile</button>
+  </form>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+  document.getElementById('profileForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    if (validateProfile()) {
+      const formData = new FormData(this);
+      const data = {
+        name: formData.get('name'),
+        email: formData.get('email'),
+        phoneNumber: formData.get('phoneNumber')
+      };
+
+      axios.post('/user/edit-profile', data)
+        .then(response => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Success',
+            text: response.data.successMessage,
+          });
+        })
+        .catch(error => {
+          let errorMessage = 'An error occurred. Please try again.';
+          if (error.response && error.response.data && error.response.data.error) {
+            errorMessage = error.response.data.error;
+          }
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: errorMessage,
+          });
+        });
+    }
+  });
+
+  function validateProfile() {
+    var isValid = true;
+
+    var name = document.getElementById('username').value;
+    var email = document.getElementById('email').value;
+    var phoneNumber = document.getElementById('phonenumber').value;
+
+    var nameError = document.getElementById('usernameError');
+    var emailError = document.getElementById('emailError');
+    var phoneNumberError = document.getElementById('phoneNumberError');
+
+    nameError.textContent = '';
+    emailError.textContent = '';
+    phoneNumberError.textContent = '';
+
+    var nameRegex = /^[a-zA-Z]+$/;
+    var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    var phoneRegex = /^\d{10}$/;
+
+    if (!name.match(nameRegex)) {
+      nameError.textContent = 'Name must contain only letters.';
+      isValid = false;
+    }
+
+    if (!email.match(emailRegex)) {
+      emailError.textContent = 'Invalid email format.';
+      isValid = false;
+    }
+
+    if (!phoneNumber.match(phoneRegex)) {
+      phoneNumberError.textContent = 'Phone number must be exactly 10 digits.';
+      isValid = false;
+    }
+
+    return isValid;
+  }
+</script>
+</body>
+</html>

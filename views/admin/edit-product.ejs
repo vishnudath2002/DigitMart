@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Edit product</title>
+  <link rel="stylesheet" href="/admin-assets/vendors/mdi/css/materialdesignicons.min.css">
+  <link rel="stylesheet" href="/admin-assets/vendors/css/vendor.bundle.base.css">
+  <link rel="stylesheet" href="/admin-assets/css/style.css">
+  <link rel="shortcut icon" href="/admin-assets/images/favicon.ico" />
+  <style>
+    .error {
+      color: red;
+      font-size: 0.875em;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container-scroller">
+    <nav class="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
+      <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
+        <p>Digit Mart</p>
+      </div>
+      <div class="navbar-menu-wrapper d-flex align-items-stretch">
+        <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+          <span class="mdi mdi-menu"></span>
+        </button>
+        <div class="search-field d-none d-md-block">
+          <form class="d-flex align-items-center h-100" action="#">
+            <div class="input-group">
+              <div class="input-group-prepend bg-transparent">
+                <i class="input-group-text border-0 mdi mdi-magnify"></i>
+              </div>
+              <input type="text" class="form-control bg-transparent border-0" placeholder="Search projects">
+            </div>
+          </form>
+        </div>
+        <ul class="navbar-nav navbar-nav-right">
+          <li class="nav-item nav-profile dropdown">
+            <a class="nav-link dropdown-toggle" id="profileDropdown" href="#" data-toggle="dropdown"
+              aria-expanded="false">
+              <i class="mdi mdi-power"></i>
+            </a>
+            <div class="dropdown-menu navbar-dropdown" aria-labelledby="profileDropdown">
+              <a class="dropdown-item" href="#">
+                <i class="mdi mdi-cached mr-2 text-success"></i> Activity Log </a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="/admin/logout">
+                <i class="mdi mdi-logout mr-2 text-primary"></i> Signout </a>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <div class="container-fluid page-body-wrapper">
+      <nav class="sidebar sidebar-offcanvas" id="sidebar">
+        <ul class="nav">
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/dashboard">
+              <span class="menu-title">Dashboard</span>
+              <i class="mdi mdi-home menu-icon"></i>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/Users">
+              <span class="menu-title">Users</span>
+              <i class="mdi mdi-contacts menu-icon"></i>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/categories">
+              <span class="menu-title">Category</span>
+              <i class="mdi mdi-format-list-bulleted menu-icon"></i>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/products">
+              <span class="menu-title">Products</span>
+              <i class="mdi mdi-format-list-bulleted menu-icon"></i>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/orders">
+              <span class="menu-title">Orders</span>
+              <i class="mdi mdi-format-list-bulleted menu-icon"></i>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/offers">
+              <span class="menu-title">Offers</span>
+              <i class="mdi mdi-table-large menu-icon"></i>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/reports">
+              <span class="menu-title">Reports</span>
+              <i class="mdi mdi-table-large menu-icon"></i>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/admin/coupons">
+              <span class="menu-title">Coupons</span>
+              <i class="mdi mdi-table-large menu-icon"></i>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="banners.html">
+              <span class="menu-title">Banners</span>
+              <i class="mdi mdi-table-large menu-icon"></i>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="main-panel">
+        <div class="content-wrapper">
+          <% if (typeof failure !== 'undefined') { %>
+            <p class="text-danger"><%= failure %></p>
+          <% } %>
+          <% if (typeof message !== 'undefined') { %>
+            <div class="text-success">
+              <p><%= message %></p>
+            </div>
+          <% } %>
+
+          <form id="productForm" action="/admin/products/<%= product._id %>?_method=PUT" method="post">
+            <label for="productName" class="form-label">Product Name:</label>
+            <input type="text" id="productName" name="Product_name" value="<%= product.Product_name %>"
+              class="form-control" required>
+            <div id="productNameError" class="error"></div>
+
+            <label for="productDescription" class="form-label">Description:</label>
+            <textarea id="productDescription" name="Description" class="form-control"
+              required><%= product.Description %></textarea>
+            <div id="productDescriptionError" class="error"></div>
+
+            <label for="productPrice" class="form-label">Price:</label>
+            <input type="number" id="productPrice" name="Price"  value="<%= product.Price %>" class="form-control"
+              required>
+            <div id="productPriceError" class="error"></div>
+
+            <br>
+            <label for="productQuantity" class="form-label">Quantity:</label>
+            <input type="number" id="productQuantity" name="Quantity" value="<%= product.Quantity %>"
+              class="form-control" required>
+            <div id="productQuantityError" class="error"></div>
+
+            <br>
+            <label for="features" class="form-label">Features:</label>
+            <input type="text" id="features" name="Feature" value="<%= product.Feature %>" class="form-control" required>
+            <div id="featuresError" class="error"></div>
+
+            <br>
+            <label for="category" class="form-label">Category:</label>
+            <select id="category" name="Category_id" class="form-select" required>
+              <% categories.forEach(category => { %>
+                <option <%= product.Category_id.name === category.name ? 'selected' : '' %> value="<%= category._id %>">
+                  <%= category.name %>
+                </option>
+              <% }); %>
+            </select>
+            <div id="categoryError" class="error"></div>
+
+            <br>
+            <label for="existingImages">Existing Images:</label>
+            <div id="existingImages">
+              <% product.Image.forEach((image, index) => { %>
+                <img src="/img/<%= image %>" alt="Product Image" style="height: 200px;width: 200px;">
+                <button type="button" onclick="removeImage('<%= product._id %>', '<%= image %>')">Remove</button>
+              <% }); %>
+            </div>
+
+            <br>
+            <input type="file" id="image1" name="Image1"  class="form-control">
+            <div id="image1Error" class="error"></div>
+            <input type="file" id="image2" name="Image2"  class="form-control">
+            <div id="image2Error" class="error"></div>
+            <input type="file" id="image3" name="Image3"  class="form-control">
+            <div id="image3Error" class="error"></div>
+
+            <br>
+            <button class="btn btn-primary mt-3" type="submit">Update Product</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    function removeImage(productId, imageName) {
+      if (confirm('Are you sure you want to remove this image?')) {
+        $.ajax({
+          url: `/admin/products/${productId}/remove-image`,
+          method: 'POST',
+          data: { imageName: imageName },
+          success: function(response) {
+            location.reload();
+          },
+          error: function(xhr, status, error) {
+            console.error(error);
+            alert('An error occurred while removing the image.');
+          }
+        });
+      }
+    }
+
+    document.getElementById('productForm').addEventListener('submit', function (event) {
+      const productName = document.getElementById('productName').value.trim();
+      const productDescription = document.getElementById('productDescription').value.trim();
+      const productPrice = document.getElementById('productPrice').value;
+      const productQuantity = document.getElementById('productQuantity').value;
+      const features = document.getElementById('features').value.trim();
+      const category = document.getElementById('category').value;
+      const image1 = document.getElementById('image1').value;
+      const image2 = document.getElementById('image2').value;
+      const image3 = document.getElementById('image3').value;
+
+      let valid = true;
+
+      if (!productName || /^[^a-zA-Z]/.test(productName)) {
+        document.getElementById('productNameError').innerText = 'Product name must start with a letter and not be empty.';
+        valid = false;
+      } else {
+        document.getElementById('productNameError').innerText = '';
+      }
+
+      if (!productDescription || /^[^a-zA-Z]/.test(productDescription)) {
+        document.getElementById('productDescriptionError').innerText = 'Description must start with a letter and not be empty.';
+        valid = false;
+      } else {
+        document.getElementById('productDescriptionError').innerText = '';
+      }
+
+      if (productPrice <= 0) {
+        document.getElementById('productPriceError').innerText = 'Price must be greater than zero.';
+        valid = false;
+      } else {
+        document.getElementById('productPriceError').innerText = '';
+      }
+
+      if (productQuantity <= 0) {
+        document.getElementById('productQuantityError').innerText = 'Quantity must be greater than zero.';
+        valid = false;
+      } else {
+        document.getElementById('productQuantityError').innerText = '';
+      }
+
+      if (!features || /^[^a-zA-Z]/.test(features)) {
+        document.getElementById('featuresError').innerText = 'Features must start with a letter and not be empty.';
+        valid = false;
+      } else {
+        document.getElementById('featuresError').innerText = '';
+      }
+
+      if (!category) {
+        document.getElementById('categoryError').innerText = 'Please select a category.';
+        valid = false;
+      } else {
+        document.getElementById('categoryError').innerText = '';
+      }
+
+      if (image1 && !/\.(jpg|jpeg|png)$/i.test(image1)) {
+        document.getElementById('image1Error').innerText = 'Invalid image format. Acceptable formats: .jpg, .jpeg, .png.';
+        valid = false;
+      } else {
+        document.getElementById('image1Error').innerText = '';
+      }
+
+      if (image2 && !/\.(jpg|jpeg|png)$/i.test(image2)) {
+        document.getElementById('image2Error').innerText = 'Invalid image format. Acceptable formats: .jpg, .jpeg, .png.';
+        valid = false;
+      } else {
+        document.getElementById('image2Error').innerText = '';
+      }
+
+      if (image3 && !/\.(jpg|jpeg|png)$/i.test(image3)) {
+        document.getElementById('image3Error').innerText = 'Invalid image format. Acceptable formats: .jpg, .jpeg, .png.';
+        valid = false;
+      } else {
+        document.getElementById('image3Error').innerText = '';
+      }
+
+      if (!valid) {
+        event.preventDefault();
+      }
+    });
+  </script>
+
+  <script src="/admin-assets/vendors/js/vendor.bundle.base.js"></script>
+  <script src="/admin-assets/js/off-canvas.js"></script>
+  <script src="/admin-assets/js/hoverable-collapse.js"></script>
+  <script src="/admin-assets/js/misc.js"></script>
+</body>
+
+</html>
