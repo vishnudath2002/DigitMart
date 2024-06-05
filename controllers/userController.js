@@ -1046,7 +1046,7 @@ exports.createOrder = async (req, res , next) => {
         }
 
         const addresses = await Address.findOne({ User_id: userId });
-        if (!addresses) {
+        if (!addresses && !addressType) {
             return res.status(404).send('Addresses not found');
         }
 
