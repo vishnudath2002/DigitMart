@@ -37,7 +37,7 @@
                         <a class="nav-link" href="/user/cart">Cart</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/user/wishlist">wishlist</a>
+                        <a class="nav-link" href="/user/wishlist">Wishlist</a>
                     </li>
                 </ul>
             </div>
@@ -54,7 +54,7 @@
     <div class="ui container">
         <h1 class="ui header"></h1>
         <form class="ui form" action="/user/addresses" method="POST" onsubmit="return validateForm()">
-            <% if (typeof address[0].Home_address === 'undefined' || !address[0].Home_address || !address[0].Home_address.Street) { %>
+            <% if (address.length === 0 || !address[0].Home_address || !address[0].Home_address.Street) { %>
             <div class="two fields">
                 <div class="field">
                     <label>Home Address:</label>
@@ -77,7 +77,7 @@
             </div>
             <% } %>
             <br>
-            <% if (typeof address[0].Office_address === 'undefined' || !address[0].Office_address || !address[0].Office_address.Street) { %>
+            <% if (address.length === 0 || !address[0].Office_address || !address[0].Office_address.Street) { %>
             <div class="two fields">
                 <div class="field">
                     <label>Office Address:</label>
@@ -116,7 +116,7 @@
             var shippingPincode = document.getElementsByName("shippingPincode")[0].value;
             var shippingState = document.getElementsByName("shippingState")[0].value;
 
-            var regex = /^[A-Za-z\s]+$/; 
+            var regex = /^[A-Za-z\s]+$/;
 
             if (!regex.test(billingAddressLine1) || !regex.test(billingCity) || !regex.test(billingState) ||
                 !regex.test(shippingAddressLine1) || !regex.test(shippingCity) || !regex.test(shippingState)) {

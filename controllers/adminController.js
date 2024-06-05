@@ -437,7 +437,7 @@ exports.listOrders = async (req, res,next) => {
         const perPage = 10; 
         const page = parseInt(req.query.page) || 1;
 
-        const orders = await Order.find().skip((perPage * page) - perPage).limit(perPage);
+        const orders = await Order.find().sort({ _id: -1 }).skip((perPage * page) - perPage).limit(perPage);
         const count = await Order.countDocuments();
 
         const productNames = await Promise.all(orders.map(async (order) => {
@@ -824,7 +824,7 @@ exports.listReports = async (req, res,next) => {
             }
         }, 0);
 
-        res.render('admin/report', { orders, productNames, salesCount, overallOrderAmount, overallDiscount  });
+        res.render('admin/report', { orders, productNames, salesCount, overallOrderAmount, overallDiscount ,startDate: startOfYear, endDate: endOfYear  });
     } catch (err) {
         console.error(err);
         next(err);
@@ -864,7 +864,7 @@ exports.generateDailyReport = async (req, res,next) => {
             }
         }, 0);
 
-        res.render('admin/report', { orders, productNames, salesCount, overallOrderAmount, overallDiscount });
+        res.render('admin/report', { orders, productNames, salesCount, overallOrderAmount, overallDiscount ,startDate: startOfDay, endDate: endOfDay  });
 
     } catch (err) {
         console.error(err);
@@ -906,12 +906,14 @@ exports.generateWeeklyReport = async (req, res,next) => {
             }
         }, 0);
 
-        res.render('admin/report', { orders, productNames, salesCount, overallOrderAmount, overallDiscount });
+        res.render('admin/report', { orders, productNames, salesCount, overallOrderAmount, overallDiscount ,startDate: startOfWeek, endDate: endOfWeek });
     } catch (err) {
         console.error(err);
         next(err);
     }
 };
+
+
 
 exports.generateYearlyReport = async (req, res,next) => {
     try {
@@ -947,13 +949,15 @@ exports.generateYearlyReport = async (req, res,next) => {
             }
         }, 0);
 
-        res.render('admin/report', { orders, productNames, salesCount, overallOrderAmount, overallDiscount });
+        res.render('admin/report', { orders, productNames, salesCount, overallOrderAmount, overallDiscount,startDate: startOfYear, endDate: endOfYear  });
 
     } catch (err) {
         console.error(err);
         next(err);
     }
 };
+
+
 
 exports.generateCustomReport = async (req, res,next) => {
     try {
@@ -983,16 +987,19 @@ exports.generateCustomReport = async (req, res,next) => {
 
         const overallOrderAmount = orders.reduce((total, order) => total + order.Total_amount, 0);
 
-        const overallDiscount = orders.reduce((totalDiscount, order) => {
-            if (order.Coupon_id) {
-                const couponDiscount = (order.Total_amount * order.Coupon_id.Discount_amount) / 100;
-                return totalDiscount + couponDiscount;
-            } else {
-                return totalDiscount;
+        const overallDiscount = await Promise.all(orders.map(async (order) => {
+            if (!order.Coupon_id) {
+                return 0;
             }
-        }, 0);
+            const coupon = await Coupon.findById(order.Coupon_id); 
+            if (!coupon) {
+                return 0;
+            }
+            const discount = (order.Total_amount * coupon.Discount_amount) / 100;
+            return discount;
+        })).then(discounts => discounts.reduce((total, discount) => total + discount, 0));
 
-        res.render('admin/report', { orders, productNames, salesCount, overallOrderAmount, overallDiscount });
+        res.render('admin/report', { orders, productNames, salesCount, overallOrderAmount, overallDiscount,startDate: validStartDate, endDate: validEndDate  });
     } catch (err) {
         console.error(err);
         next(err);

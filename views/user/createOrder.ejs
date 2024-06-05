@@ -81,15 +81,16 @@
                                         <form action="/user/order/create" method="POST" onsubmit="return validateOrder()">
                                             <div class="mb-4 pb-2">
                                                 <select id="addressType" name="addressType" class="form-control" required>
-                                                    <% if (address.Home_address?.Street) { %>
+                                                    <% if (address && address.Home_address?.Street) { %>
                                                         <option value="home">Home Address</option>
                                                     <% } %>
-                                                    <% if (address.Office_address?.Street) { %>
+                                                    <% if (address && address.Office_address?.Street) { %>
                                                         <option value="office">Office Address</option>
                                                     <% } %>
-                                                    <% if (address.New_address?.Street) { %>
+                                                    <% if (address && address.New_address?.Street) { %>
                                                         <option value="additional">Additional Address</option>
                                                     <% } %>
+                                                    <option style="display: none;"></option>
                                                     <option value="new">New Address</option>
                                                 </select>
                                             </div>
@@ -111,8 +112,6 @@
                                                     <input type="text" id="state" name="state" class="form-control">
                                                 </div>
                                             </div>
-
-
                                     </div>
                                 </div>
 
@@ -172,7 +171,10 @@
                                         <div class="d-flex justify-content-between mb-5">
                                             <h5 class="text-uppercase">Total price</h5>
                                             <% if (typeof discountedPrice !=='undefined' ) { %>
-                                                <h5>
+                                                <h5 style="color: red;" >
+                                                    <strike> <%= cart.TotalAmount %> </strike>
+                                                </h5>
+                                                <h5 style="color: green;">
                                                     <%= discountedPrice %>
                                                 </h5>
                                                 <% } else { %>
@@ -223,12 +225,20 @@
         var totalAmount =` <%= cart.TotalAmount %> ` ;
         var walletAmount = ` <%= wallet?.Balance %> `;
         var paymentType = document.getElementById('paymentType').value;
+        var addressType = document.getElementById('addressType').value;
+
         
 
         if ((discountedPrice > 1000 || totalAmount > 1000) && paymentType === 'cod') {
             alert('Cash on Delivery (COD) is not allowed for orders above Rs 1000');
             return false; 
         }
+        
+        if(!address){
+            alert('Add Address Type');
+            return false; 
+        }
+
 
         if ( ( walletAmount >= totalAmount || walletAmount >= discountedPrice ) && paymentType === 'wallet') {
             alert('Insufitioent Amount in Wallet');

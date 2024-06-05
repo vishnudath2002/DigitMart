@@ -113,4 +113,5 @@ router.get('/wallet',auth,userController.viewWallet);
 router.post('/wallet/add', auth, userController.addMoneyToWallet);
 router.post('/wallet/withdraw', auth, userController.withdrawMoneyFromWallet);
 
+
 module.exports = router;

@@ -1881,9 +1881,9 @@ exports.addToWishlist = async (req, res , next) => {
             if (!productExists) {
                 wishlist.Items.push({ Product: productId });
                 await wishlist.save();
-                return res.json({ message: 'Product added to wishlist' });
+                return res.json({ success:true, message: 'Product added to wishlist' });
             } else {
-                return res.status(400).json({ message: 'Product already in wishlist' });
+                return res.status(400).json({ success:false, message: 'Product already in wishlist' });
             }
         }
     } catch (err) {
@@ -1906,7 +1906,7 @@ exports.removeFromWishlist = async (req, res , next) => {
         } else {
             res.status(404).json({ error: 'Wishlist not found' });
         }
-    } catch (error) {
+    } catch (err) {
         console.error(err);
         next(err);
     }
@@ -1940,7 +1940,7 @@ exports.viewWallet = async (req, res , next) => {
             return res.render('user/wallet', { wallet: null });
         }
 
-        res.render('user/wallet', { wallet  });
+        res.render('user/wallet', { wallet , Razorpay });
     } catch (err) {
         console.error(err);
         next(err);
@@ -1952,7 +1952,8 @@ exports.addMoneyToWallet = async (req, res) => {
     try {
         const { amount } = req.body;
         const userId = req.session.userId; 
-        
+
+          
         let wallet = await Wallet.findOne({ User_id: userId });
 
         if (!wallet) {
@@ -1977,11 +1978,14 @@ exports.addMoneyToWallet = async (req, res) => {
         await wallet.save();
 
         res.status(200).json({ message: 'Money added successfully', balance: wallet.Balance });
-    } catch (error) {
+    } catch (err) {
         console.error(err);
         next(err);
     }
 };
+
+
+
 
 exports.withdrawMoneyFromWallet = async (req, res) => {
     try {
@@ -2011,7 +2015,7 @@ exports.withdrawMoneyFromWallet = async (req, res) => {
         await wallet.save();
 
         res.status(200).json({ message: 'Money withdrawn successfully', balance: wallet.Balance });
-    } catch (error) {
+    } catch (err) {
         console.error(err);
         next(err);
     }

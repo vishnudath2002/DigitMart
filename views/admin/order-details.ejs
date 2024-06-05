@@ -156,7 +156,7 @@
                 <p>Products:</p>
                 <ul>
                   <% order.Products.forEach(productDetail => { %>
-                    <li><%= productDetail.Product.Product_name %>  -  ₹<%= productDetail.Product.Price %>
+                    <li><%= productDetail.Quantity %>x<%= productDetail.Product.Product_name %>  -  ₹<%= productDetail.Product.Price %>
                         status : <button><%= productDetail.Status %></button>
                       <form action="/admin/orders/<%= order._id %>/products/<%= productDetail.Product._id %>/status" method="POST">
                         <select name="status" onchange="this.form.submit()">

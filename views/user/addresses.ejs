@@ -58,21 +58,19 @@
     </nav>
     <div class="container">
         <h1>User Addresses</h1>
-        <% if ( typeof address[0].Home_address === 'undefined' || typeof address[0].Office_address === 'undefined'  || !address[0].Home_address.Street
-         ||  !address[0].Home_address || !address[0].Office_address || !address[0].Office_address.Street ) { %>
+        <% if (!address || address.length === 0 || typeof address[0].Home_address === 'undefined' || typeof address[0].Office_address === 'undefined' || !address[0].Home_address?.Street || !address[0].Home_address || !address[0].Office_address || !address[0].Office_address?.Street) { %>
             <a href="/user/addresses/new" class="ui primary button">Add Address</a>
-            <% } %>
-        
-            <% if (typeof address[0].New_address === 'undefined' || !address[0].New_address || !address[0].New_address.Street) { %>
-                <a href="/user/addresses/add" class="ui primary button">Add Additional Address</a>
-          
         <% } %>
 
-        <% address.forEach(address => { %>
+        <% if (!address || address.length === 0 || typeof address[0].New_address === 'undefined' || !address[0].New_address || !address[0].New_address?.Street) { %>
+            <a href="/user/addresses/add" class="ui primary button">Add Additional Address</a>
+        <% } %>
+
+        <% address && address.forEach(address => { %>
             <div class="ui raised segment">
                 <div class="content">
                     
-                    <% if (address.Home_address && address.Home_address.Street) { %>
+                    <% if (address.Home_address?.Street) { %>
                     <h3>Home Address</h3>
                     <div class="ui list">
                         <div class="item">
@@ -99,7 +97,7 @@
                     <% } %>
                     <br><br>
                     
-                    <% if (address.Office_address && address.Office_address.Street) { %>
+                    <% if (address.Office_address?.Street) { %>
                     <h3>Office Address</h3>
                     <div class="ui list">
                         <div class="item">
@@ -126,7 +124,7 @@
                     <% } %>
                     <br><br>
 
-                    <% if (address.New_address && address.New_address.Street) { %>
+                    <% if (address.New_address?.Street) { %>
                     <h3>Additional Address</h3>
                     <div class="ui list">
                         <div class="item">
