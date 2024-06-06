@@ -4,8 +4,7 @@ const userController = require('../controllers/userController');
 const userProfile = require('../controllers/userProfile');
 const userCart = require('../controllers/userCart');
 const userCoupon = require('../controllers/userCoupon');
-
-
+const userOrder = require('../controllers/userOrder');
 
 const auth = require('../middlewares/userauth');
 //const authorize = require('../middlewares/authorizationMiddleware');
@@ -78,16 +77,16 @@ router.post('/decrement/:productId', userCart.decrementQuantity);
 router.post('/cart/:productId', auth, userCart.removeFromCart);
 
 
-router.get('/orders', auth, userController.getUserOrders);
-router.get('/orders/:id', userController.getOrderDetails);
-router.get('/order/create',auth, userController.renderCreateOrderForm);
-router.post('/orders/repayment/:orderId/:totalAmount',userController.paymentRetry)
-router.post('/order/verify',userController.verify)
-router.post('/order/create',auth, userController.createOrder);
-router.post('/orders/:orderId/cancel', auth, userController.cancelOrder);
-router.post('/orders/:orderId/:productId/cancelEach', auth, userController.cancelEachProduct);
-router.post('/orders/:orderId/Return', auth, userController.returnOrder);
-router.post('/orders/:orderId/:productId/ReturnEach', auth, userController.returnEachProduct);
+router.get('/orders', auth, userOrder.getUserOrders);
+router.get('/orders/:id', userOrder.getOrderDetails);
+router.get('/order/create',auth, userOrder.renderCreateOrderForm);
+router.post('/orders/repayment/:orderId/:totalAmount',userOrder.paymentRetry)
+router.post('/order/verify',userOrder.verify)
+router.post('/order/create',auth, userOrder.createOrder);
+router.post('/orders/:orderId/cancel', auth, userOrder.cancelOrder);
+router.post('/orders/:orderId/:productId/cancelEach', auth, userOrder.cancelEachProduct);
+router.post('/orders/:orderId/Return', auth, userOrder.returnOrder);
+router.post('/orders/:orderId/:productId/ReturnEach', auth, userOrder.returnEachProduct);
 
 
 
