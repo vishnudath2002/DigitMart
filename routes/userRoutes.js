@@ -3,6 +3,8 @@ const express = require('express');
 const userController = require('../controllers/userController');
 const userProfile = require('../controllers/userProfile');
 const userCart = require('../controllers/userCart');
+const userCoupon = require('../controllers/userCoupon');
+
 
 
 const auth = require('../middlewares/userauth');
@@ -45,8 +47,10 @@ router.get('/resend-otp', userController.resendOTP);
 router.get('/homepage', auth, (req, res) => { res.render('user/homepage'); });
 router.get('/product',auth, userController.renderProduct);
 router.get('/product/:productId', auth,userController.renderProductDetails);
-router.post('/apply-coupon',auth, userController.applyCoupon);
-router.post('/remove-coupon',auth, userController.removeCoupon);
+
+
+router.post('/apply-coupon',auth, userCoupon.applyCoupon);
+router.post('/remove-coupon',auth, userCoupon.removeCoupon);
 
 
 router.get('/profile', auth, userProfile.getUserProfile);
