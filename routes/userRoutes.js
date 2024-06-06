@@ -1,6 +1,10 @@
 const express = require('express');
 // const passport = require('passport');
 const userController = require('../controllers/userController');
+const userProfile = require('../controllers/userProfile');
+const userCart = require('../controllers/userCart');
+
+
 const auth = require('../middlewares/userauth');
 //const authorize = require('../middlewares/authorizationMiddleware');
 const router = express.Router();
@@ -45,51 +49,42 @@ router.post('/apply-coupon',auth, userController.applyCoupon);
 router.post('/remove-coupon',auth, userController.removeCoupon);
 
 
-router.get('/profile', auth, userController.getUserProfile);
+router.get('/profile', auth, userProfile.getUserProfile);
+router.get('/edit-profile', auth, userProfile.getEditProfile);
+router.post('/edit-profile', auth, userProfile.updateUserProfile);
+router.get('/change-password',auth, userProfile.renderChangePasswordForm);
+router.post('/change-password',auth, userProfile.changePassword);
 
-
-router.get('/addresses', auth, userController.getUserAddresses);
-router.get('/addresses/new', auth,userController.getAddAddresses );
-router.post('/addresses', auth, userController.addUserAddress);
+router.get('/addresses', auth, userProfile.getUserAddresses);
+router.get('/addresses/new', auth,userProfile.getAddAddresses );
+router.post('/addresses', auth,userProfile.addUserAddress);
 router.get('/addresses/add', auth, (req, res) => { res.render('user/new-address'); } );
-router.post('/add-address', userController.addNewAddress);
-router.get('/addresses/edit/:type',  userController.getEditAddresses );
-router.post('/addresses/:addressId', userController.updateUserAddress );
-router.get('/addresses/delete/:type', userController.deleteAddress);
-// router.get('/addresses/delete',  userController.deleteUserAddress );
+router.post('/add-address', userProfile.addNewAddress);
+router.get('/addresses/edit/:type',  userProfile.getEditAddresses );
+router.post('/addresses/:addressId', userProfile.updateUserAddress );
+router.get('/addresses/delete/:type', userProfile.deleteAddress);
 
 
 
-router.get('/cart', auth, userController.listProductsInCart);
-router.post('/add-to-cart/:productId', auth, userController.addToCart);
-router.post('/increment/:productId', userController.incrementQuantity);
-router.post('/decrement/:productId', userController.decrementQuantity);
-router.post('/cart/:productId', auth, userController.removeFromCart);
+
+router.get('/cart', auth, userCart.listProductsInCart);
+router.post('/add-to-cart/:productId', auth, userCart.addToCart);
+router.post('/increment/:productId', userCart.incrementQuantity);
+router.post('/decrement/:productId', userCart.decrementQuantity);
+router.post('/cart/:productId', auth, userCart.removeFromCart);
 
 
 router.get('/orders', auth, userController.getUserOrders);
 router.get('/orders/:id', userController.getOrderDetails);
-
-
-
 router.get('/order/create',auth, userController.renderCreateOrderForm);
 router.post('/orders/repayment/:orderId/:totalAmount',userController.paymentRetry)
 router.post('/order/verify',userController.verify)
-
 router.post('/order/create',auth, userController.createOrder);
 router.post('/orders/:orderId/cancel', auth, userController.cancelOrder);
 router.post('/orders/:orderId/:productId/cancelEach', auth, userController.cancelEachProduct);
-
 router.post('/orders/:orderId/Return', auth, userController.returnOrder);
 router.post('/orders/:orderId/:productId/ReturnEach', auth, userController.returnEachProduct);
 
-
-
-
-router.get('/edit-profile', auth, userController.getEditProfile);
-router.post('/edit-profile', auth, userController.updateUserProfile);
-router.get('/change-password',auth, userController.renderChangePasswordForm);
-router.post('/change-password',auth, userController.changePassword);
 
 
 

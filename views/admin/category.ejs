@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -52,7 +53,7 @@
 
 
     <div class="container-fluid page-body-wrapper">
-     
+
       <nav class="sidebar sidebar-offcanvas" id="sidebar">
         <ul class="nav">
 
@@ -132,54 +133,60 @@
       <div class="main-panel">
         <div class="content-wrapper">
 
-        
+
 
           <div class="container mt-5">
 
             <div>
-            <% if (typeof error !== 'undefined') { %>
-              <p class="text-danger"><%= error %></p>
-          <% } %>
-          <% if (typeof success !== 'undefined') { %>
-            <p class="text-success"><%= success %></p>
-        <% } %>
-      </div>
-      
+              <% if (typeof error !=='undefined' ) { %>
+                <p class="text-danger">
+                  <%= error %>
+                </p>
+                <% } %>
+                  <% if (typeof success !=='undefined' ) { %>
+                    <p class="text-success">
+                      <%= success %>
+                    </p>
+                    <% } %>
+            </div>
+
             <div class="card">
               <div class="card-body">
-               
-                <form class="forms-sample" action="/admin/categories" method="post">
+
+                <form class="forms-sample" action="/admin/categories" method="post" onsubmit="return validateForm()">
                   <div class="form-group">
-                    <label for="exampleInputUsername1">Category Name</label>
-                    <input type="text" class="form-control" id="exampleInputUsername1" placeholder="Category Name" name="name" required>
+                    <label for="categoryName">Category Name</label>
+                    <input type="text" class="form-control" id="categoryName" placeholder="Category Name" name="name" required>
                   </div>
                   <div class="form-group">
-                    <label for="exampleInputUsername1">Description</label>
-                    <input type="text" class="form-control" id="exampleInputUsername1" placeholder="Description" name="description" required>
+                    <label for="categoryDescription">Description</label>
+                    <input type="text" class="form-control" id="categoryDescription" placeholder="Description" name="description" required>
                   </div>
                   <button type="submit" class="btn btn-gradient-primary mr-2">New</button>
-                 
                 </form>
               </div>
             </div>
-           <br>
-      
-            <ul class="list-group">
-                <% categories.forEach(category => { %>
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                      <%= category.name %> -      <%= category.description %> 
-                        <div>
-                            <a href="/admin/categories/<%= category._id %>/edit" class="btn btn-sm btn-info btn-margin">Update</a>
+            <br>
 
-                            <form id="deleteForm_<%= category._id %>" action="/admin/categories/<%= category._id %>" method="get">
-                            <a onclick="confirmDelete('<%= category._id %>')" class="btn btn-sm btn-danger btn-margin">Delete</a>
-                          </form>
-                        </div>
-                    </li>
-                  
+            <ul class="list-group">
+              <% categories.forEach(category=> { %>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                  <%= category.name %> - <%= category.description %>
+                      <div>
+                        <a href="/admin/categories/<%= category._id %>/edit"
+                          class="btn btn-sm btn-info btn-margin">Update</a>
+
+                        <form id="deleteForm_<%= category._id %>" action="/admin/categories/<%= category._id %>"
+                          method="get">
+                          <a onclick="confirmDelete('<%= category._id %>')"
+                            class="btn btn-sm btn-danger btn-margin">Delete</a>
+                        </form>
+                      </div>
+                </li>
+
                 <% }); %>
             </ul>
-        </div>
+          </div>
 
         </div>
       </div>
@@ -196,6 +203,28 @@
         document.getElementById("deleteForm_" + categoryId).submit();
       }
     }
+
+    function validateForm() {
+
+
+      const name = document.getElementById('categoryName').value;
+    const description = document.getElementById('categoryDescription').value;
+
+
+      if (/\s/.test(name)) {
+        alert('Category name must not contain spaces.');
+        return false;
+       }
+
+
+
+      if (/\s/.test(description)) {
+        alert(' Category Description must not contain spaces.');
+        return false;
+        }
+
+      return true;
+    }
   </script>
   <script src="/admin-assets/vendors/js/vendor.bundle.base.js"></script>
   <script src="/admin-assets/js/off-canvas.js"></script>
@@ -204,14 +233,14 @@
 
 </body>
 
-    
-    <script src="/admin-assets/vendors/js/vendor.bundle.base.js"></script>
-    
-    <script src="/admin-assets/js/off-canvas.js"></script>
-    <script src="/admin-assets/js/hoverable-collapse.js"></script>
-    <script src="/admin-assets/js/misc.js"></script>
-   
-  </body>
+
+<script src="/admin-assets/vendors/js/vendor.bundle.base.js"></script>
+
+<script src="/admin-assets/js/off-canvas.js"></script>
+<script src="/admin-assets/js/hoverable-collapse.js"></script>
+<script src="/admin-assets/js/misc.js"></script>
+
+</body>
 
 
 </html>
