@@ -12,10 +12,10 @@ const ExcelJS = require('exceljs');
 
 
 exports.signIn = async (req, res,next) => {
-    const { email, Password } = req.body;
+    
 
     try {
-
+        const { email, Password } = req.body;
         const admin = await Admin.findOne({ Email: email });
 
 
@@ -24,7 +24,7 @@ exports.signIn = async (req, res,next) => {
 
 
             res.redirect('/admin/dashboard');
-        } else {
+         } else {
             if(admin.Email === email){
                 res.render('admin/signin', { error: 'wrong email' });
             }
@@ -35,19 +35,19 @@ exports.signIn = async (req, res,next) => {
    }
     } catch (err) {
         console.error(err);
-        next(err);
+    next(err);
     }
 };
 
 
 exports.logOut = async (req, res,next) => {
     req.session.destroy(function (err) {
-        if (err) {
+         if (err) {
             console.log(err);
-            res.send("Error")
+              res.send("Error")
         } else {
-            res.render('admin/signin', { success: "Logout successful" })
-        }
+        res.render('admin/signin', { success: "Logout successful" })
+    }
     })
 };
 
@@ -59,8 +59,8 @@ exports.renderDashboard = async (req, res,next) => {
 
         const startOfWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay());
         const endOfWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() + (6 - today.getDay()) + 1);
-        const startOfMonth = new Date(today.getFullYear(), 0, 1);
-        const endOfMonth = new Date(today.getFullYear(), 11, 31);
+          const startOfMonth = new Date(today.getFullYear(), 0, 1);
+           const endOfMonth = new Date(today.getFullYear(), 11, 31);
 
         const monthlyOrders = await Order.find({
             Delivery_date: { $gte: startOfMonth, $lt: endOfMonth }
@@ -70,7 +70,7 @@ exports.renderDashboard = async (req, res,next) => {
 
         const monthly = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         monthlyOrders.forEach(order => {
-            const orderMonth = new Date(order.Delivery_date).getMonth();
+              const orderMonth = new Date(order.Delivery_date).getMonth();
             monthly[orderMonth] += order.Total_amount;
         });
 
@@ -81,70 +81,72 @@ exports.renderDashboard = async (req, res,next) => {
             Delivery_date: { $gte: startOfWeek, $lt: endOfWeek }
         });
 
-        const sellCount = orders.length;
+         const sellCount = orders.length;
 
-        const orderAmountsPerDay = [0, 0, 0, 0, 0, 0, 0];    
+       const orderAmountsPerDay = [0, 0, 0, 0, 0, 0, 0];    
         const weekTotalAmount = orders.reduce((total, order) => total + order.Total_amount, 0);;      
         orders.forEach(order => {
             const orderDay = new Date(order.Delivery_date).getDay();
-            orderAmountsPerDay[orderDay] += order.Total_amount;
+        orderAmountsPerDay[orderDay] += order.Total_amount;
         }); 
         
         
     
         const categories = await Category.find({ Deleted: false }).sort({ sellcount: -1 }).limit(3);
-        const products = await Product.find({ Deleted: false }).populate('Category_id').sort({ Popularity: -1 }).limit(5);
+    const products = await Product.find({ Deleted: false }).populate('Category_id').sort({ Popularity: -1 }).limit(5);
         const users = await User.find();
         const userCount = users.length;    
-        const data =JSON.stringify(orderAmountsPerDay);
+     const data =JSON.stringify(orderAmountsPerDay);
 
         
         res.render('admin/dashboard', {  sellCount , userCount , weekTotalAmount, monthTotalAmount , categories , products ,   data , monthData });
 
     } catch (err) {
         console.error(err);
-        next(err);
-    }
+    next(err);
+}
 };
 
 
 
 exports.listUsers = async (req, res,next) => {
+    
+ 
+try {
     const page = Number(req.query.page) || 1; 
     const limit = 4; 
-    const skip = (page - 1) * limit; 
- 
-    try {
+      const skip = (page - 1) * limit; 
         const users = await User.find().skip(skip).limit(limit);
-        const totalUsers = await User.countDocuments(); 
+      const totalUsers = await User.countDocuments(); 
         const totalPages = Math.ceil(totalUsers / limit); 
         res.render('admin/users', { users, totalPages, currentPage: page });
-    } catch (err) {
+      } catch (err) {
         console.error(err);
-        next(err);
-    }
+          next(err);
+      }
 };
 
 
 
 exports.toggleBlockUser = async (req, res,next) => {
 
-    const userId = req.params.id;
+    
 
-    try {
+ try {
+     const userId = req.params.id;
         const user = await User.findById(userId);
-        if (!user) {
+         if (!user) {
             console.error(`User with ID ${userId} not found`);
             return res.status(404).send('User not found');
         }
 
 
         user.blocked = !user.blocked;
-        await user.save();
+    await user.save();
 
         res.redirect('/admin/users');
     } catch (err) {
-        console.error(err);
+     console.error(err);
         next(err);
     }
 };
@@ -159,18 +161,17 @@ exports.createCategory = async (req, res,next) => {
     try {
         const { name, description } = req.body;
 
+    const existingCategory = await Category.findOne({ name :{ $regex: name, $options: 'i' } });
 
-        const existingCategory = await Category.findOne({ name :{ $regex: name, $options: 'i' } });
-
-        if (existingCategory) {
-            const categories = await Category.find({});
+          if (existingCategory) {
+            const categories = await Category.find({ Deleted:false });
             return res.render('admin/category', { error: 'Category with this name already exists', categories });
         }
 
         const category = new Category({ name, description, Deleted: false });
         await category.save();
 
-        const categories = await Category.find({ Deleted: false });
+     const categories = await Category.find({ Deleted: false });
         res.render('admin/category',{success:'New Category Created',categories});
 
     } catch (err) {
@@ -181,32 +182,34 @@ exports.createCategory = async (req, res,next) => {
 
 
 exports.listCategories = async (req, res,next) => {
-    try {
+try {
         const categories = await Category.find({ Deleted: false });
-        res.render('admin/category', { categories });
-    } catch (err) {
+    res.render('admin/category', { categories });
+      } catch (err) {
         console.error(err);
         next(err);
     }
 };
 
+
 exports.listTopCategories = async (req, res,next) => {
     try {
-        const categories = await Category.find({ Deleted: false }).sort({ sellcount: -1 }).limit(3);
+    const categories = await Category.find({ Deleted: false }).sort({ sellcount: -1 }).limit(3);
         res.render('admin/category', { categories });
-    } catch (err) {
+     } catch (err) {
         console.error(err);
-        next(err);
+     next(err);
     }
 };
 
 
 exports.renderEditCategoryForm = async (req, res,next) => {
     try {
-        const category = await Category.findById(req.params.id);
-        res.render('admin/edit-category', { category });
+     const categoryId = req.params.id
+        const category = await Category.findById(categoryId);
+         res.render('admin/edit-category', { category });
     } catch (err) {
-        console.error(err);
+    console.error(err);
         next(err);
     }
 };
@@ -215,16 +218,16 @@ exports.renderEditCategoryForm = async (req, res,next) => {
 exports.updateCategory = async (req, res,next) => {
     try {
         const { name, description } = req.body;
-        const cate = Category.findOne({ name })
+     const cate = Category.findOne({ name })
         if(cate){
             const categories = await Category.find({});
             res.render('admin/category', { error: 'Category with this name already exists', categories });
         }
          
         await Category.findByIdAndUpdate(req.params.id, { name, description });
-        res.redirect('/admin/categories');
+     res.redirect('/admin/categories');
     } catch (err) {
-        console.error(err);
+     console.error(err);
         next(err);
     }
 };
@@ -232,12 +235,12 @@ exports.updateCategory = async (req, res,next) => {
 
 exports.deleteCategory = async (req, res,next) => {
     try {
-
-        await Category.findByIdAndUpdate(req.params.id, { Deleted: true });
-        res.redirect('/admin/categories');
+        const categoryId = req.params.id;
+        await Category.findByIdAndUpdate( categoryId , { Deleted: true });
+           res.redirect('/admin/categories');
     } catch (err) {
         console.error(err);
-        next(err);
+     next(err);
     }
 };
 
