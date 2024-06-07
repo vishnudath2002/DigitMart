@@ -6,7 +6,6 @@ const Order = require('../models/order');
 const Offer = require('../models/offer');
 const Coupon = require('../models/coupon');
 const Wallet = require('../models/wallet')
-// const fs = require('fs');
 const ExcelJS = require('exceljs');
 
 
@@ -20,14 +19,20 @@ exports.signIn = async (req, res,next) => {
         const admin = await Admin.findOne({ Email: email });
 
 
-        if (admin && admin.Password === Password) {
-            req.session.adminId = admin._id;
+ if (admin && admin.Password === Password) {
+         req.session.adminId = admin._id;
 
 
             res.redirect('/admin/dashboard');
         } else {
-            res.render('admin/signin', { error: 'wrong email or password' });
-        }
+            if(admin.Email === email){
+                res.render('admin/signin', { error: 'wrong email' });
+            }
+            else{
+                res.render('admin/signin', { error: 'wrong password' });
+            }
+         
+   }
     } catch (err) {
         console.error(err);
         next(err);
@@ -54,8 +59,8 @@ exports.renderDashboard = async (req, res,next) => {
 
         const startOfWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay());
         const endOfWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() + (6 - today.getDay()) + 1);
-        const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-        const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+        const startOfMonth = new Date(today.getFullYear(), 0, 1);
+        const endOfMonth = new Date(today.getFullYear(), 11, 31);
 
         const monthlyOrders = await Order.find({
             Delivery_date: { $gte: startOfMonth, $lt: endOfMonth }
@@ -64,7 +69,6 @@ exports.renderDashboard = async (req, res,next) => {
         const monthTotalAmount = monthlyOrders.reduce((total, order) => total + order.Total_amount, 0);
 
         const monthly = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-
         monthlyOrders.forEach(order => {
             const orderMonth = new Date(order.Delivery_date).getMonth();
             monthly[orderMonth] += order.Total_amount;
@@ -79,10 +83,8 @@ exports.renderDashboard = async (req, res,next) => {
 
         const sellCount = orders.length;
 
-        const orderAmountsPerDay = [0, 0, 0, 0, 0, 0, 0]; 
-       
-        const weekTotalAmount = orders.reduce((total, order) => total + order.Total_amount, 0);;
-        
+        const orderAmountsPerDay = [0, 0, 0, 0, 0, 0, 0];    
+        const weekTotalAmount = orders.reduce((total, order) => total + order.Total_amount, 0);;      
         orders.forEach(order => {
             const orderDay = new Date(order.Delivery_date).getDay();
             orderAmountsPerDay[orderDay] += order.Total_amount;
@@ -91,13 +93,9 @@ exports.renderDashboard = async (req, res,next) => {
         
     
         const categories = await Category.find({ Deleted: false }).sort({ sellcount: -1 }).limit(3);
-
         const products = await Product.find({ Deleted: false }).populate('Category_id').sort({ Popularity: -1 }).limit(5);
-
         const users = await User.find();
-
-        const userCount = users.length;
-        
+        const userCount = users.length;    
         const data =JSON.stringify(orderAmountsPerDay);
 
         
@@ -115,12 +113,11 @@ exports.listUsers = async (req, res,next) => {
     const page = Number(req.query.page) || 1; 
     const limit = 4; 
     const skip = (page - 1) * limit; 
-
+ 
     try {
         const users = await User.find().skip(skip).limit(limit);
         const totalUsers = await User.countDocuments(); 
         const totalPages = Math.ceil(totalUsers / limit); 
-
         res.render('admin/users', { users, totalPages, currentPage: page });
     } catch (err) {
         console.error(err);

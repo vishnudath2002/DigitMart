@@ -5,6 +5,10 @@ const userProfile = require('../controllers/userProfile');
 const userCart = require('../controllers/userCart');
 const userCoupon = require('../controllers/userCoupon');
 const userOrder = require('../controllers/userOrder');
+const userWishlist = require('../controllers/userWishlist');
+const userWallet = require('../controllers/userWallet');
+
+
 
 const auth = require('../middlewares/userauth');
 //const authorize = require('../middlewares/authorizationMiddleware');
@@ -103,13 +107,13 @@ router.get('/products/de-alphabetical',auth, userController.getProductsDeAlphabe
 router.get('/products/category/:categoryId',auth, userController.getProductsByCategory);
 
 
-router.post('/add-to-wishlist/:productId', auth, userController.addToWishlist);
-router.post('/wishlist/:productId', auth, userController.removeFromWishlist);
-router.get('/wishlist', auth, userController.listProductsInWishlist);
+router.post('/add-to-wishlist/:productId', auth, userWishlist.addToWishlist);
+router.post('/wishlist/:productId', auth, userWishlist.removeFromWishlist);
+router.get('/wishlist', auth, userWishlist.listProductsInWishlist);
 
-router.get('/wallet',auth,userController.viewWallet);
-router.post('/wallet/add', auth, userController.addMoneyToWallet);
-router.post('/wallet/withdraw', auth, userController.withdrawMoneyFromWallet);
+router.get('/wallet',auth,userWallet.viewWallet);
+router.post('/wallet/add', auth, userWallet.addMoneyToWallet);
+router.post('/wallet/withdraw', auth, userWallet.withdrawMoneyFromWallet);
 
 
 module.exports = router;

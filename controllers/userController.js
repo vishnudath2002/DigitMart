@@ -1,18 +1,10 @@
 const User = require('../models/user');
 const Category = require('../models/category');
-const Address = require('../models/address');
-const Order = require('../models/order');
 const Product = require('../models/product');
 const Otp = require('../models/otp');
-const Coupon = require('../models/coupon');
-const Cart = require('../models/cart');
 const Wishlist = require('../models/wishlist')
 const Wallet = require('../models/wallet')
-const mongoose = require('mongoose');
 const Razorpay = require('razorpay');
-
-
-
 const nodemailer = require('nodemailer');
 const passport = require('passport');
 const bcrypt = require('bcrypt');
@@ -34,11 +26,6 @@ function calculateDiscountedPrice(product, value) {
 }
 
 
-
-const razorpay = new Razorpay({
-    key_id: process.env.razorpay_key_id,
-    key_secret: process.env.razorpay_key_secret
-});
 
 
 
@@ -404,16 +391,7 @@ exports.submitReview = async (req, res , next) => {
 
 
 
-
-
-
-
 /////////////////////////////////////////
-
-
-
-
-
 
 
 
@@ -573,161 +551,3 @@ exports.getProductsByCategory = async (req, res , next) => {
 
 /////////////////////
 
-
-exports.addToWishlist = async (req, res , next) => {
-    const { productId } = req.params;
-    const userId = req.session.userId;
-
-    try {
-        let wishlist = await Wishlist.findOne({ User_id: userId });
-        if (!wishlist) {
-            wishlist = new Wishlist({
-                User_id: userId,
-                Items: [{ Product: productId }]
-            });
-            await wishlist.save();
-            return res.json({ message: 'Product added to wishlist' });
-        } else {
-            const productExists = wishlist.Items.some(item => item.Product.toString() === productId);
-            if (!productExists) {
-                wishlist.Items.push({ Product: productId });
-                await wishlist.save();
-                return res.json({ success:true, message: 'Product added to wishlist' });
-            } else {
-                return res.status(400).json({ success:false, message: 'Product already in wishlist' });
-            }
-        }
-    } catch (err) {
-        console.error(err);
-        next(err);
-    }
-};
-
-
-exports.removeFromWishlist = async (req, res , next) => {
-    const { productId } = req.params;
-    const userId = req.session.userId;
-
-    try {
-        const wishlist = await Wishlist.findOne({ User_id: userId });
-        if (wishlist) {
-            wishlist.Items = wishlist.Items.filter(item => item.Product.toString() !== productId);
-            await wishlist.save();
-            res.status(200).json({ message: 'Product removed from wishlist' });
-        } else {
-            res.status(404).json({ error: 'Wishlist not found' });
-        }
-    } catch (err) {
-        console.error(err);
-        next(err);
-    }
-};
-
-
-
-exports.listProductsInWishlist = async (req, res , next) => {
-    const userId = req.session.userId;
-    try {
-        const wishlist = await Wishlist.findOne({ User_id: userId }).populate('Items.Product');
-
-        res.render('user/wishlist', { wishlist });
-    } catch (err) {
-        console.error(err);
-        next(err);
-    }
-};
-
-
-///////////////////
-
-exports.viewWallet = async (req, res , next) => {
-    try {
-
-        const userId = req.session.userId;
-
-        const wallet = await Wallet.findOne({ User_id: userId }).populate('User_id');
-
-        if (!wallet) {
-            return res.render('user/wallet', { wallet: null });
-        }
-
-        res.render('user/wallet', { wallet , Razorpay });
-    } catch (err) {
-        console.error(err);
-        next(err);
-    }
-};
-
-
-exports.addMoneyToWallet = async (req, res) => {
-    try {
-        const { amount } = req.body;
-        const userId = req.session.userId; 
-
-          
-        let wallet = await Wallet.findOne({ User_id: userId });
-
-        if (!wallet) {
-         
-            wallet = new Wallet({
-                User_id: userId,
-                Balance: 0,
-                History: []
-            });
-        }
-
-       
-        const oldBalance = wallet.Balance;
-        wallet.Balance += Number(amount);
-        wallet.History.push({
-            amount,
-            status: 'Deposit',
-            oldBalance
-        });
-
-       
-        await wallet.save();
-
-        res.status(200).json({ message: 'Money added successfully', balance: wallet.Balance });
-    } catch (err) {
-        console.error(err);
-        next(err);
-    }
-};
-
-
-
-
-exports.withdrawMoneyFromWallet = async (req, res) => {
-    try {
-        const { amount } = req.body;
-        const userId = req.session.userId;
-
-       
-        let wallet = await Wallet.findOne({ User_id: userId });
-
-        if (!wallet) {
-            return res.status(404).json({ message: 'Wallet not found' });
-        }
-
-        if (wallet.Balance < amount) {
-            return res.status(400).json({ message: 'Insufficient balance' });
-        }
-
-        const oldBalance = wallet.Balance;
-        wallet.Balance -= Number(amount);
-        wallet.History.push({
-            amount,
-            status: 'Withdrawal',
-            oldBalance
-        });
-
-     
-        await wallet.save();
-
-        res.status(200).json({ message: 'Money withdrawn successfully', balance: wallet.Balance });
-    } catch (err) {
-        console.error(err);
-        next(err);
-    }
-};
